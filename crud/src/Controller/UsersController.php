@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Services\RolesChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,9 +15,13 @@ class UsersController extends AbstractController
     /** @var UserRepository */
     private $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    /** @var RolesChecker */
+    private $rolesChecker;
+
+    public function __construct(UserRepository $userRepository, RolesChecker $rolesChecker)
     {
         $this->userRepository = $userRepository;
+        $this->rolesChecker = $rolesChecker;
     }
 
     /**
@@ -26,6 +31,8 @@ class UsersController extends AbstractController
      */
     public function showAction(int $id): JsonResponse
     {
+        $this->getDoctrine()->getManager();
+
         /** @var User|null $user */
         $user = $this->userRepository->find($id);
 
@@ -37,7 +44,7 @@ class UsersController extends AbstractController
             'id' => $user->getId(),
             'name' => $user->getName(),
             'email' => $user->getEmail(),
-            'role_id' => $user->getRole()->getId()
+            'is_admin' => $this->rolesChecker->isAdmin($user)
         ]);
     }
 }
