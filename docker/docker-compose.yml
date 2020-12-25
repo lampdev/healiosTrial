@@ -1,0 +1,57 @@
+version: '3'
+
+volumes:
+  db-volume:
+  crud_vendor:
+
+services:
+  db:
+    build:
+      context: ../db
+      dockerfile: Dockerfile
+      args:
+        MYSQL_DATABASE: "${MYSQL_DATABASE:-db}"
+        MYSQL_USER: "${MYSQL_USER:-user}"
+        MYSQL_PASSWORD: "${MYSQL_PASSWORD:-password}"
+        MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-password}"
+        SYSTEM_TZ: "${SYSTEM_TZ:-America/New_York}"
+    environment:
+      TZ: "${SYSTEM_TZ:-America/New_York}"
+    ports:
+      - 3306:3306
+    volumes:
+      - db-volume:/var/lib/mysql2
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db
+    environment:
+      MYSQL_USER: "${MYSQL_USER:-user}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD:-password}"
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-password}"
+      TZ: "${SYSTEM_TZ:-America/New_York}"
+    ports:
+      - 8080:80
+
+  baseimg:
+    build:
+      context: images/base
+      dockerfile: Dockerfile
+      args:
+        SYSTEM_TZ: "${SYSTEM_TZ:-America/New_York}"
+    image: baseimg
+
+  crud:
+    build:
+      context: ../crud
+      dockerfile: Dockerfile
+    env_file:
+      - ../crud/.env
+    depends_on:
+      - db
+    ports:
+      - 8081:80
+    volumes:
+      - ../crud:/var/www/html
+      - crud_vendor:/var/www/html/vendor
