@@ -12,28 +12,36 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class User implements UserInterface
 {
     /**
-     * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=25, unique=true)
+     * @ORM\Column(type="string", length=255)
+     * @var string
      */
-    private $username;
+    private $name;
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     * @var string
+     */
+    private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @var string
      */
     private $password;
 
-
     /**
-     * @ORM\Column(type="string", length=45)
+     * @ORM\Column(type="integer", name="role_id")
+     * @var int
      */
-    private $email;
+    private $roleId;
 
     /**
      * @return int
@@ -46,67 +54,110 @@ class User implements UserInterface
     /**
      * @return string
      */
-    public function getUsername()
+    public function getName(): string
     {
-        return $this->username;
+        return $this->name;
     }
 
     /**
-     * @param mixed $username
+     * @param string $name
+     * @return $this
      */
-    public function setUsername($username): void
+    public function setName(string $name): self
     {
-        $this->username = $username;
+        $this->name = $name;
+
+        return $this;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getSalt()
-    {
-        return null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * @param $password
-     */
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
-    /**
-     * @return mixed
-     */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     /**
-     * @param mixed $email
+     * @param string $email
+     * @return $this
      */
-    public function setEmail($email): void
+    public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
     }
 
     /**
-     * @return array|string[]
+     * @return string
      */
-    public function getRoles()
+    public function getPassword(): string
     {
-        return ['ROLE_USER'];
+        return $this->password;
     }
 
-    public function eraseCredentials()
+    /**
+     * @param string $password
+     * @return $this
+     */
+    public function setPassword(string $password): self
     {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getRoleId(): int
+    {
+        return $this->roleId;
+    }
+
+    /**
+     * @param int $roleId
+     * @return $this
+     */
+    public function setRoleId(int $roleId): self
+    {
+        $this->roleId = $roleId;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return string
+     */
+    public function getSalt(): string
+    {
+        return 'secureSalt';
+    }
+
+    /**
+     * @return string
+     */
+    public function getUsername(): string
+    {
+        return $this->getEmail();
+    }
+
+    /**
+     * @return $this
+     */
+    public function eraseCredentials(): self
+    {
+        // todo: Implement eraseCredentials() method.
+
+        return $this;
     }
 }

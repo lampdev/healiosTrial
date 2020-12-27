@@ -21,19 +21,23 @@ class AuthController extends ApiController
     public function register(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
         $request = $this->transformJsonBody($request);
-        $username = (string)$request->get('username', '');
+        $name = (string)$request->get('name', '');
         $password = (string)$request->get('password', '');
         $email = (string)$request->get('email', '');
 
-        if (!$username || !$password || !$email) {
+        if (!$name || !$password || !$email) {
             return $this->respondValidationError();
         }
 
         $em = $this->getDoctrine()->getManager();
         $user = new User();
-        $user->setUsername($username);
-        $user->setPassword($encoder->encodePassword($user, $password));
-        $user->setEmail($email);
+        $user
+            ->setPassword($encoder->encodePassword($user, $password))
+            ->setEmail($email)
+            ->setName($name)
+            ->setRoleId(1)
+        ;
+
         $em->persist($user);
         $em->flush();
 
