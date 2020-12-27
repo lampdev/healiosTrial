@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -53,11 +54,12 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/users/store", name="users.store", methods={"GET"})
+     * @Route("/users/store", name="users.store", methods={"POST"})
      * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
      * @return JsonResponse
      */
-    public function storeAction(Request $request): JsonResponse
+    public function storeAction(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
         $this->setUserRequest($request);
         $violations = $this->validateUserRequest();
@@ -73,7 +75,7 @@ class UsersController extends AbstractController
         $user = new User();
         $user->setName($this->userRequest->name);
         $user->setEmail($this->userRequest->email);
-        $user->setPassword($this->userRequest->password);
+        $user->setPassword($encoder->encodePassword($user, $this->userRequest->password));
         $user->setRole($this->userRequest->role);
         $this->userRepository->plush($user);
         $this->setUserResponse($user);
