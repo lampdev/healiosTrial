@@ -24,14 +24,6 @@ class RolesManager
     }
 
     /**
-     * @return Role
-     */
-    public function getDefaultRole(): Role
-    {
-        return $this->getRoleByName(self::USER_ROLE);
-    }
-
-    /**
      * @param User $user
      * @return bool
      */
@@ -43,18 +35,41 @@ class RolesManager
     }
 
     /**
+     * @param int $roleId
+     * @return Role
+     */
+    public function findOrDefault(int $roleId): Role
+    {
+        $role = $this->roleRepository->find($roleId);
+
+        if (!$role) {
+            $role = $this->getDefaultRole();
+        }
+
+        return $role;
+    }
+
+    /**
      * @return Role
      */
     private function getAdminRole(): Role
     {
-        return $this->getRoleByName(self::ADMIN_ROLE);
+        return $this->getByNameOrCreate(self::ADMIN_ROLE);
+    }
+
+    /**
+     * @return Role
+     */
+    private function getDefaultRole(): Role
+    {
+        return $this->getByNameOrCreate(self::USER_ROLE);
     }
 
     /**
      * @param string $name
      * @return Role
      */
-    private function getRoleByName(string $name): Role
+    private function getByNameOrCreate(string $name): Role
     {
         if (!in_array($name, self::AVAILABLE_ROLES)) {
             $name = self::USER_ROLE;
