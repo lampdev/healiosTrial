@@ -9,7 +9,8 @@ SET time_zone = "+00:00";
 
 
 INSERT INTO `user` (`id`, `name`, `email`, `password`, `role_id`) VALUES
-(1, 'admin', 'admin@email.com', '$2y$13$pZM9DrbIqFQYU6lSk5jeb.5WRzfs74bGUmVFGwU9lX4QPHnLS/MkS', 1);
+(1, 'admin', 'admin@email.com', '$2y$13$pZM9DrbIqFQYU6lSk5jeb.5WRzfs74bGUmVFGwU9lX4QPHnLS/MkS', 1),
+(2, 'user', 'user@email.com', '$2y$13$K1VaGGbqY3uzjZvLllICKOK7m0x34gLqndUx767D/lK0PUFsF61SG', 2);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
