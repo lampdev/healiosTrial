@@ -12,6 +12,9 @@ RUN /bin/echo -e '\
 ErrorLog "/dev/stderr"\n\
 CustomLog "/dev/stdout" common\n\
 <VirtualHost *:80>\n\
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1\n\
+    SetEnvIf Content-Type "(.*)" HTTP_CONTENT_TYPE=$1\n\
+    SetEnvIf Accept "(.*)" HTTP_ACCEPT=$1\n\
     DocumentRoot "/var/www/html/public"\n\
     <Directory "/var/www/html/public">\n\
         AllowOverride None\n\

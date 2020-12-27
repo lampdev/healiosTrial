@@ -46,9 +46,11 @@ services:
   crud:
     build:
       context: ../crud
-      dockerfile: Dockerfile
+      dockerfile: ../docker/images/symfony/Dockerfile
     env_file:
       - ../crud/.env
+    environment:
+      SALT: "${SALT:-secureSalt}"
     depends_on:
       - db
     ports:
@@ -60,9 +62,11 @@ services:
   auth:
     build:
       context: ../auth
-      dockerfile: Dockerfile
+      dockerfile: ../docker/images/symfony/Dockerfile
     env_file:
       - ../auth/.env
+    environment:
+      SALT: "${SALT:-secureSalt}"
     depends_on:
       - db
     ports:

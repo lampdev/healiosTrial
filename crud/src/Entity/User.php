@@ -141,7 +141,7 @@ class User implements EntityInterface, UserInterface
      */
     public function getSalt(): string
     {
-        return 'secureSalt';
+        return (string)getenv('SALT');
     }
 
     /**

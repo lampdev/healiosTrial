@@ -20,12 +20,6 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     * @var string
-     */
-    private $name;
-
-    /**
      * @ORM\Column(type="string", length=255, unique=true)
      * @var string
      */
@@ -38,12 +32,6 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\Column(type="integer", name="role_id")
-     * @var int
-     */
-    private $roleId;
-
-    /**
      * @return int
      */
     public function getId(): int
@@ -54,77 +42,9 @@ class User implements UserInterface
     /**
      * @return string
      */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     * @return $this
-     */
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getPassword(): string
     {
         return $this->password;
-    }
-
-    /**
-     * @param string $password
-     * @return $this
-     */
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getRoleId(): int
-    {
-        return $this->roleId;
-    }
-
-    /**
-     * @param int $roleId
-     * @return $this
-     */
-    public function setRoleId(int $roleId): self
-    {
-        $this->roleId = $roleId;
-
-        return $this;
     }
 
     /**
@@ -140,7 +60,7 @@ class User implements UserInterface
      */
     public function getSalt(): string
     {
-        return 'secureSalt';
+        return (string)getenv('SALT');
     }
 
     /**
@@ -148,7 +68,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return $this->getEmail();
+        return $this->email;
     }
 
     /**
