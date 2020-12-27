@@ -3,6 +3,7 @@ version: '3'
 volumes:
   db-volume:
   crud_vendor:
+  auth_vendor:
 
 services:
   db:
@@ -55,3 +56,17 @@ services:
     volumes:
       - ../crud:/var/www/html
       - crud_vendor:/var/www/html/vendor
+
+  auth:
+    build:
+      context: ../auth
+      dockerfile: Dockerfile
+    env_file:
+      - ../auth/.env
+    depends_on:
+      - db
+    ports:
+      - 8082:80
+    volumes:
+      - ../auth:/var/www/html
+      - auth_vendor:/var/www/html/vendor
