@@ -8,9 +8,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 
-INSERT INTO `user` (`id`, `name`, `email`, `password`, `role_id`) VALUES
-(1, 'admin', 'admin@email.com', '$2y$13$pZM9DrbIqFQYU6lSk5jeb.5WRzfs74bGUmVFGwU9lX4QPHnLS/MkS', 1),
-(2, 'user', 'user@email.com', '$2y$13$K1VaGGbqY3uzjZvLllICKOK7m0x34gLqndUx767D/lK0PUFsF61SG', 2);
+INSERT INTO `role` (`id`, `name`) VALUES
+(1, ''admin''),
+(2, ''user'');
+
+INSERT INTO `user` (`id`, `role_id`, `name`, `email`, `password`) VALUES
+(1, 1, ''admin'', ''admin@email.com'', ''$2y$13$piJjfbFK1vHD508xeirlU.cmpPf8TMjLk.zm2VJmbfxYSnfm9.hJ2''),
+(2, 2, ''user'', ''user@email.com'', ''$2y$13$nYqiTj5R2UQZZDHs1JFF/e53n9LfNG1NLfr/Ji8IORcpy9z0UNdUe'');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
