@@ -14,11 +14,12 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class AuthController extends AbstractController
 {
     /**
+     * @Route("/api/register", name="auth.register", methods={"POST"})
      * @param Request $request
      * @param UserPasswordEncoderInterface $encoder
      * @return JsonResponse
      */
-    public function register(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
+    public function registerAction(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
         $name = (string)$request->get('name', '');
         $password = (string)$request->get('password', '');
