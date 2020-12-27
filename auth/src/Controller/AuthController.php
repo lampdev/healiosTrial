@@ -3,15 +3,15 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
-class AuthController extends ApiController
+class AuthController extends AbstractController
 {
     /**
      * @param Request $request
@@ -20,13 +20,12 @@ class AuthController extends ApiController
      */
     public function register(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
-        $request = $this->transformJsonBody($request);
         $name = (string)$request->get('name', '');
         $password = (string)$request->get('password', '');
         $email = (string)$request->get('email', '');
 
         if (!$name || !$password || !$email) {
-            return $this->respondValidationError();
+            return new JsonResponse([], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $em = $this->getDoctrine()->getManager();
@@ -41,17 +40,7 @@ class AuthController extends ApiController
         $em->persist($user);
         $em->flush();
 
-        return $this->response(['success' => true]);
-    }
-
-    /**
-     * @param UserInterface $user
-     * @param JWTTokenManagerInterface $JWTManager
-     * @return JsonResponse
-     */
-    public function getTokenUser(UserInterface $user, JWTTokenManagerInterface $JWTManager)
-    {
-        return new JsonResponse(['token' => $JWTManager->create($user)]);
+        return new JsonResponse(['success' => true]);
     }
 
     /**
