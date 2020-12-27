@@ -7,6 +7,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -51,9 +52,14 @@ class AuthController extends ApiController
 
     /**
      * @Route("/api/current", name="auth.current", methods={"GET"})
+     * @param TokenStorageInterface $storage
+     * @return JsonResponse
      */
-    public function currentUserAction()
+    public function currentUserAction(TokenStorageInterface $storage)
     {
-        dd(1);
+        /** @var User $user */
+        $user = $storage->getToken()->getUser();
+
+        return new JsonResponse(['id' => $user->getId()]);
     }
 }
