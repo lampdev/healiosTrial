@@ -67,6 +67,7 @@ services:
       - ../auth/.env
     environment:
       SALT: "${SALT:-secureSalt}"
+      CRUD_HOST: "${CRUD_HOST:-http://crud}"
     depends_on:
       - db
     ports:

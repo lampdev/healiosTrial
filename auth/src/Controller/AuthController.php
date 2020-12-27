@@ -3,9 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Services\CustomGuzzleClient;
+use App\Services\RequestExceptionParser;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -14,13 +19,26 @@ class AuthController extends AbstractController
     /**
      * @Route("/api/register", name="auth.register", methods={"POST"})
      * @param Request $request
+     * @param CustomGuzzleClient $guzzleClient
      * @return JsonResponse
      */
-    public function registerAction(Request $request): JsonResponse
+    public function registerAction(Request $request, CustomGuzzleClient $guzzleClient): JsonResponse
     {
-        // @todo: call crud@store
+        try {
+            $response = $guzzleClient->post(getenv('CRUD_HOST') . '/users/store', [
+                'form_params' => [
+                    'name' => (string)$request->get('name', ''),
+                    'email' => (string)$request->get('email', ''),
+                    'password' => (string)$request->get('password', '')
+                ]
+            ]);
+        } catch (RequestException $e) {
+            return new JsonResponse(['errors' => RequestExceptionParser::getErrors($e)], $e->getCode());
+        } catch (GuzzleException $e) {
+            return new JsonResponse(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
-        return new JsonResponse(['success' => true]);
+        return new JsonResponse($response->arrayData, $response->statusCode);
     }
 
     /**

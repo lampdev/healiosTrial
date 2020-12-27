@@ -22,6 +22,19 @@ if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
 
 $kernel = new Kernel($_SERVER['APP_ENV'], (bool) $_SERVER['APP_DEBUG']);
 $request = Request::createFromGlobals();
+
+//$serverIp = $request->server->get('SERVER_ADDR');
+//$lastDote = strrpos($serverIp, '.');
+//$serverMask = substr($serverIp, 0, $lastDote);
+//$clientIp = $request->getClientIp();
+//$lastDote = strrpos($clientIp, '.');
+//$clientMask = substr($clientIp, 0, $lastDote);
+//$serverEnd = str_replace($serverMask . '.', '', $serverIp);
+//$clientEnd = str_replace($clientMask . '.', '', $clientIp);
+//
+//echo json_encode([$serverIp, $clientIp, $serverMask, $clientMask, $serverEnd, $clientEnd]);
+//die();
+
 $response = $kernel->handle($request);
 $response->send();
 $kernel->terminate($request, $response);
