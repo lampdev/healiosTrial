@@ -4,8 +4,7 @@ namespace App\EventSubscriber;
 
 use App\Controller\TokenAuthenticatedController;
 use App\Services\RequestDataParser;
-use App\Services\ThirdPartyConnector;
-use App\Structures\UserData;
+use App\Services\UserInfoRetriever;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,12 +20,12 @@ class UsersMiddleware implements EventSubscriberInterface
         '/api/users/delete',
     ];
 
-    /** @var ThirdPartyConnector */
-    private $thirdPartyConnector;
+    /** @var UserInfoRetriever */
+    private $userInfoRetriever;
 
-    public function __construct(ThirdPartyConnector $thirdPartyConnector)
+    public function __construct(UserInfoRetriever $userInfoRetriever)
     {
-        $this->thirdPartyConnector = $thirdPartyConnector;
+        $this->userInfoRetriever = $userInfoRetriever;
     }
 
     /**
@@ -46,23 +45,23 @@ class UsersMiddleware implements EventSubscriberInterface
         }
 
         $request = $event->getRequest();
-        $userId = $this->thirdPartyConnector->validateToken($request);
+        $userId = $this->userInfoRetriever->getUserIdByToken($request);
 
         if (!$userId) {
             throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
         }
 
-        $userData = $this->thirdPartyConnector->getUser($userId);
+        $isAdmin = $this->userInfoRetriever->isAdmin($userId);
 
-        if (!$userData) {
+        if (is_null($isAdmin)) {
             throw new HttpException(Response::HTTP_NOT_FOUND, 'User not found');
         }
 
-        if ($userData->isAdmin) {
+        if ($isAdmin) {
             return;
         }
 
-        $defaultUserEndpoints = $this->getDefaultUserEndpoints($userData);
+        $defaultUserEndpoints = $this->getDefaultUserEndpoints($userId);
         $requestUri = $request->getRequestUri();
 
         if (!in_array($requestUri, $defaultUserEndpoints)) {
@@ -87,15 +86,15 @@ class UsersMiddleware implements EventSubscriberInterface
     }
 
     /**
-     * @param UserData $userData
+     * @param int $userId
      * @return string[]
      */
-    private function getDefaultUserEndpoints(UserData $userData): array
+    private function getDefaultUserEndpoints(int $userId): array
     {
         $list = self::USER_ROLE_ENDPOINTS;
 
         foreach ($list as &$endpoint) {
-            $endpoint .= '/' . $userData->userId;
+            $endpoint .= '/' . $userId;
         }
 
         return $list;

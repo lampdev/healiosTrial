@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
-use App\Structures\UserData;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\HttpFoundation\Request;
 
-class ThirdPartyConnector
+class UserInfoRetriever
 {
     /** @var string */
     private $authHost;
@@ -26,31 +25,26 @@ class ThirdPartyConnector
 
     /**
      * @param int $userId
-     * @return UserData|null
+     * @return bool|null
      */
-    public function getUser(int $userId): ?UserData
+    public function isAdmin(int $userId): ?bool
     {
+        $url = $this->crudHost . '/api/users/show/' . $userId;
+
         try {
-            $response = $this->customGuzzleClient->request(
-                Request::METHOD_GET,
-                $this->crudHost . '/api/users/show/' . $userId
-            );
+            $response = $this->customGuzzleClient->request(Request::METHOD_GET, $url);
         } catch (GuzzleException $e) {
             return null;
         }
 
-        $userData = new UserData();
-        $userData->userId = (int)$response->arrayData['id'];
-        $userData->isAdmin = (bool)$response->arrayData['isAdmin'];
-
-        return $userData;
+        return (bool)$response->arrayData['isAdmin'];
     }
 
     /**
      * @param Request $request
      * @return int|null
      */
-    public function validateToken(Request $request): ?int
+    public function getUserIdByToken(Request $request): ?int
     {
         $token = (string)$request->headers->get('Authorization', '');
 
