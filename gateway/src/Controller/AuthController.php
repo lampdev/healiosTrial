@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Controller;
-
 
 use App\Services\CustomGuzzleClient;
 use App\Services\RequestDataParser;
@@ -14,7 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 
 class AuthController extends AbstractController
 {
@@ -67,6 +64,8 @@ class AuthController extends AbstractController
         } catch (GuzzleException $e) {
             return new JsonResponse(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
+        // @todo: Get token, get userId and save
 
         return new JsonResponse($response->arrayData, $response->statusCode);
     }
