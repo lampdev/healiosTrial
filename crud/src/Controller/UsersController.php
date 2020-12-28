@@ -125,6 +125,7 @@ class UsersController extends AbstractController
         }
 
         $this->persistUser($user, $encoder);
+        // @todo: Update refresh token
 
         return new JsonResponse($this->userResponse);
     }
