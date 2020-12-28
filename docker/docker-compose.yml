@@ -4,6 +4,7 @@ volumes:
   db-volume:
   crud_vendor:
   auth_vendor:
+  gateway_vendor:
 
 services:
   db:
@@ -75,3 +76,20 @@ services:
     volumes:
       - ../auth:/var/www/html
       - auth_vendor:/var/www/html/vendor
+
+  gateway:
+    build:
+      context: ../gateway
+      dockerfile: ../docker/images/symfony/Dockerfile
+    env_file:
+      - ../gateway/.env
+    environment:
+      CRUD_HOST: "${CRUD_HOST:-http://crud}"
+      AUTH_HOST: "${AUTH_HOST:-http://auth}"
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    volumes:
+      - ../gateway:/var/www/html
+      - gateway_vendor:/var/www/html/vendor

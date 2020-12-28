@@ -9,6 +9,7 @@ BUILD_OPTION=$1
 cp ./auth/.env.example ./auth/.env
 cp ./crud/.env.example ./crud/.env
 cp ./docker/.env.example ./docker/.env
+cp ./gateway/.env.example ./gateway/.env
 
 cd ./docker
 
@@ -23,4 +24,5 @@ docker-compose up -d
 export COMPOSER_ALLOW_SUPERUSER=1
 cd ../auth; composer install
 cd ../crud; composer install
+cd ../gateway; composer install
 cd ..

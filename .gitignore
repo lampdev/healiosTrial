@@ -2,3 +2,4 @@
 docker/.env
 crud/.env
 auth/.env
+gateway/.env
