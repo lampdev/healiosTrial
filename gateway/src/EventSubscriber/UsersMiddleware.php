@@ -32,7 +32,7 @@ class UsersMiddleware implements EventSubscriberInterface
     /**
      * @param ControllerEvent $event
      */
-    public function onKernelController(ControllerEvent $event)
+    public function onKernelController(ControllerEvent $event): void
     {
         /** @var AbstractController|AbstractController[] $controller */
         $controller = $event->getController();
@@ -41,34 +41,38 @@ class UsersMiddleware implements EventSubscriberInterface
             $controller = $controller[0];
         }
 
-        if ($controller instanceof TokenAuthenticatedController) {
-            $request = $event->getRequest();
-            $userId = $this->thirdPartyConnector->validateToken($request);
+        if (!$controller instanceof TokenAuthenticatedController) {
+            return;
+        }
 
-            if (!$userId) {
-                throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
-            }
+        $request = $event->getRequest();
+        $userId = $this->thirdPartyConnector->validateToken($request);
 
-            $user = $this->thirdPartyConnector->getUser($userId);
+        if (!$userId) {
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
+        }
 
-            if (!$user) {
-                throw new HttpException(Response::HTTP_NOT_FOUND, 'User not found');
-            }
+        $userData = $this->thirdPartyConnector->getUser($userId);
 
-            if (!$user->isAdmin) {
-                $defaultUserEndpoints = $this->getDefaultUserEndpoints($user);
-                $requestUri = $request->getRequestUri();
+        if (!$userData) {
+            throw new HttpException(Response::HTTP_NOT_FOUND, 'User not found');
+        }
 
-                if (!in_array($requestUri, $defaultUserEndpoints)) {
-                    throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied');
-                }
+        if ($userData->isAdmin) {
+            return;
+        }
 
-                $request = RequestDataParser::transformJsonBody($request);
+        $defaultUserEndpoints = $this->getDefaultUserEndpoints($userData);
+        $requestUri = $request->getRequestUri();
 
-                if ((int)$request->get('role_id', 0)) {
-                    throw new HttpException(Response::HTTP_FORBIDDEN, 'Role updating forbidden');
-                }
-            }
+        if (!in_array($requestUri, $defaultUserEndpoints)) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied');
+        }
+
+        $request = RequestDataParser::transformJsonBody($request);
+
+        if ((int)$request->get('role_id', 0)) {
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Role updating forbidden');
         }
     }
 
