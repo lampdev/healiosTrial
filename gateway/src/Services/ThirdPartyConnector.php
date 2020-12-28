@@ -13,7 +13,8 @@ class ThirdPartyConnector
 
     /** @var CustomGuzzleClient */
     private $customGuzzleClient;
-    /** * @var string */
+
+    /** @var string */
     private $crudHost;
 
     public function __construct(CustomGuzzleClient $customGuzzleClient)

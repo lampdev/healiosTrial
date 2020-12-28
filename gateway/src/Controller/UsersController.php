@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Services\CustomGuzzleClient;
 use App\Services\RequestDataParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,6 +10,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UsersController extends ApiController implements TokenAuthenticatedController
 {
+    /** @var string */
+    private $crudHost;
+
+    public function __construct(CustomGuzzleClient $guzzleClient)
+    {
+        parent::__construct($guzzleClient);
+        $this->crudHost = (string)getenv('CRUD_HOST');
+    }
+
     /**
      * @Route("/api/users/store", name="users.store", methods={"POST"})
      * @param Request $request
@@ -26,7 +36,7 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
             ]
         ];
 
-        return $this->apiRequest(Request::METHOD_POST, getenv('CRUD_HOST') . '/users/store', $options);
+        return $this->apiRequest(Request::METHOD_POST, $this->crudHost . '/users/store', $options);
     }
 
     /**
@@ -36,7 +46,7 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
      */
     public function showAction(int $id): JsonResponse
     {
-        return $this->apiRequest(Request::METHOD_GET, getenv('CRUD_HOST') . '/users/show/' . $id);
+        return $this->apiRequest(Request::METHOD_GET, $this->crudHost . '/users/show/' . $id);
     }
 
     /**
@@ -57,7 +67,7 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
             ]
         ];
 
-        return $this->apiRequest(Request::METHOD_PUT, getenv('CRUD_HOST') . '/users/update/' . $id, $options);
+        return $this->apiRequest(Request::METHOD_PUT, $this->crudHost . '/users/update/' . $id, $options);
     }
 
     /**
@@ -67,6 +77,6 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
      */
     public function deleteAction(int $id): JsonResponse
     {
-        return $this->apiRequest(Request::METHOD_DELETE, getenv('CRUD_HOST') . '/users/delete/' . $id);
+        return $this->apiRequest(Request::METHOD_DELETE, $this->crudHost . '/users/delete/' . $id);
     }
 }

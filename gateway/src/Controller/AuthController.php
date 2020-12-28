@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Services\CustomGuzzleClient;
 use App\Services\RequestDataParser;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,6 +10,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class AuthController extends ApiController
 {
+    /** @var string */
+    private $authHost;
+
+    public function __construct(CustomGuzzleClient $guzzleClient)
+    {
+        parent::__construct($guzzleClient);
+        $this->authHost = (string)getenv('AUTH_HOST');
+    }
+
     /**
      * @Route("/api/register", name="auth.register", methods={"POST"})
      * @param Request $request
@@ -25,7 +35,7 @@ class AuthController extends ApiController
             ]
         ];
 
-        return $this->apiRequest(Request::METHOD_POST, getenv('AUTH_HOST') . '/api/register', $options);
+        return $this->apiRequest(Request::METHOD_POST, $this->authHost . '/api/register', $options);
     }
 
     /**
@@ -43,8 +53,6 @@ class AuthController extends ApiController
             ]
         ];
 
-        // @todo: Get token, get userId and save
-
-        return $this->apiRequest(Request::METHOD_POST, getenv('AUTH_HOST') . '/api/login', $options);
+        return $this->apiRequest(Request::METHOD_POST, $this->authHost . '/api/login', $options);
     }
 }
