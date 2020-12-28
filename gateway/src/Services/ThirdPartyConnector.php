@@ -30,7 +30,10 @@ class ThirdPartyConnector
     public function getUser(int $userId): ?UserData
     {
         try {
-            $response = $this->customGuzzleClient->get($this->crudHost . '/users/show/' . $userId);
+            $response = $this->customGuzzleClient->request(
+                Request::METHOD_GET,
+                $this->crudHost . '/users/show/' . $userId
+            );
         } catch (GuzzleException $e) {
             return null;
         }
@@ -51,7 +54,7 @@ class ThirdPartyConnector
         $token = (string)$request->headers->get('Authorization', '');
 
         try {
-            $response = $this->customGuzzleClient->get($this->authHost . '/api/current', [
+            $response = $this->customGuzzleClient->request(Request::METHOD_GET, $this->authHost . '/api/current', [
                 'headers' => [
                     'Authorization' => $token,
                     'Accept' => 'application/json'

@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Controller\TokenAuthenticatedController;
+use App\Services\RequestDataParser;
 use App\Services\ThirdPartyConnector;
 use App\Structures\UserData;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -59,6 +60,12 @@ class UsersMiddleware implements EventSubscriberInterface
                 $requestUri = $request->getRequestUri();
 
                 if (!in_array($requestUri, $defaultUserEndpoints)) {
+                    throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied');
+                }
+
+                $request = RequestDataParser::transformJsonBody($request);
+
+                if ((int)$request->get('role_id', 0)) {
                     throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied');
                 }
             }

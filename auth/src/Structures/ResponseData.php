@@ -16,12 +16,4 @@ class ResponseData
 
     /** @var array */
     public $arrayData = [];
-
-    /**
-     * @return bool
-     */
-    public function isOk(): bool
-    {
-        return $this->statusCode === Response::HTTP_OK;
-    }
 }
