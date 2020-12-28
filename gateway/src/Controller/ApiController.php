@@ -15,7 +15,7 @@ class ApiController extends AbstractController
     /** @var CustomGuzzleClient */
     protected $customGuzzleClient;
 
-    public function __construct(CustomGuzzleClient  $guzzleClient)
+    public function __construct(CustomGuzzleClient $guzzleClient)
     {
         $this->customGuzzleClient = $guzzleClient;
     }

@@ -5,9 +5,9 @@ namespace App\Services;
 use GuzzleHttp\Exception\RequestException;
 
 /**
- * @todo: Consider moving this service into a separate library
  * @param RequestException $exception
  * @return string
+ * @todo: Consider moving this service into a separate library
  */
 class RequestExceptionParser
 {
