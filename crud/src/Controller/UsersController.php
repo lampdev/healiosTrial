@@ -123,15 +123,18 @@ class UsersController extends AbstractController
             return new JsonResponse(['errors' => (string)$violations], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        if ($this->userRepository->findOneBy(['email' => $this->userRequest->email])) {
-            return new JsonResponse(['errors' => 'This email is already in use'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
         /** @var User|null $user */
         $user = $this->userRepository->find($id);
 
         if (!$user) {
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
+
+        if (
+            $this->userRequest->email != $user->getEmail()
+            && $this->userRepository->findOneBy(['email' => $this->userRequest->email])
+        ) {
+            return new JsonResponse(['errors' => 'This email is already in use'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $oldEmail = $user->getEmail();
@@ -161,6 +164,8 @@ class UsersController extends AbstractController
         if (!$removed) {
             return new JsonResponse(['errors' => 'Entity was not removed'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+
+        $this->refreshTokenRepository->removeAllByEmail($user->getEmail());
 
         return new JsonResponse(['success' => true]);
     }

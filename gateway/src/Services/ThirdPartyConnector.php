@@ -33,7 +33,7 @@ class ThirdPartyConnector
         try {
             $response = $this->customGuzzleClient->request(
                 Request::METHOD_GET,
-                $this->crudHost . '/users/show/' . $userId
+                $this->crudHost . '/api/users/show/' . $userId
             );
         } catch (GuzzleException $e) {
             return null;

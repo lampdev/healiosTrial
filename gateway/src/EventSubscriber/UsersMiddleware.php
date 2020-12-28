@@ -66,7 +66,7 @@ class UsersMiddleware implements EventSubscriberInterface
                 $request = RequestDataParser::transformJsonBody($request);
 
                 if ((int)$request->get('role_id', 0)) {
-                    throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied');
+                    throw new HttpException(Response::HTTP_FORBIDDEN, 'Role updating forbidden');
                 }
             }
         }

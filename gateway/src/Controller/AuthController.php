@@ -58,4 +58,21 @@ class AuthController extends ApiController
 
         return $this->apiRequest(Request::METHOD_POST, $this->authHost . '/api/login', $options);
     }
+
+    /**
+     * @Route("/refresh", name="refresh", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function refreshAction(Request $request): JsonResponse
+    {
+        $request = RequestDataParser::transformJsonBody($request);
+        $options = [
+            'json' => [
+                'refresh_token' => (string)$request->get('refresh_token', '')
+            ]
+        ];
+
+        return $this->apiRequest(Request::METHOD_POST, $this->authHost . '/api/token/refresh', $options);
+    }
 }
