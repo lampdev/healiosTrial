@@ -9,7 +9,6 @@ class RoleRepository extends AbstractRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        $this->getEntityManager();
         parent::__construct($registry);
     }
 

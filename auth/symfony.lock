@@ -78,6 +78,9 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.0"
     },
+    "gesdinet/jwt-refresh-token-bundle": {
+        "version": "v0.10.0"
+    },
     "guzzlehttp/guzzle": {
         "version": "7.2.0"
     },
@@ -314,6 +317,22 @@
     },
     "symfony/stopwatch": {
         "version": "v5.2.1"
+    },
+    "symfony/translation-contracts": {
+        "version": "v2.3.0"
+    },
+    "symfony/validator": {
+        "version": "4.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.3",
+            "ref": "d902da3e4952f18d3bf05aab29512eb61cabd869"
+        },
+        "files": [
+            "config/packages/test/validator.yaml",
+            "config/packages/validator.yaml"
+        ]
     },
     "symfony/var-dumper": {
         "version": "v4.4.18"
