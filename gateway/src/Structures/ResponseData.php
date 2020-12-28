@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class ResponseData
  * @package App\Structures
  */
-class ResponseData
+    class ResponseData
 {
     /** @var int */
     public $statusCode = Response::HTTP_OK;

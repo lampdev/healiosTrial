@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
  * Class CustomGuzzleClient
  * @package App\Services
  */
-class CustomGuzzleClient
+    class CustomGuzzleClient
 {
     /** @var Client */
     private $client;
@@ -20,6 +20,19 @@ class CustomGuzzleClient
     public function __construct()
     {
         $this->client = new Client();
+    }
+
+    /**
+     * @param string $uri
+     * @param array $options
+     * @return ResponseData
+     * @throws GuzzleException
+     */
+    public function get(string $uri, array $options = []): ResponseData
+    {
+        $response = $this->client->get($uri, $options);
+
+        return $this->transformResponse($response);
     }
 
     /**
