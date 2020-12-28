@@ -2,8 +2,6 @@
 
 namespace App\Responses;
 
-use App\Entity\User;
-
 class UserResponse
 {
     /** @var int */

@@ -1,19 +1,19 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: bcrypt
+  encoders:
+    App\Entity\User:
+      algorithm: bcrypt
 
-    providers:
-        app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-        main:
-            anonymous: true
+  providers:
+    app_user_provider:
+      entity:
+        class: App\Entity\User
+        property: email
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    main:
+      anonymous: true
 
-    access_control:
+  access_control:
 #        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }

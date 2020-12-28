@@ -30,7 +30,6 @@ class RefreshTokenRepository extends AbstractRepository
             ->setParameter('newEmail', $newEmail)
             ->setParameter('oldEmail', $oldEmail)
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
     }
 }
