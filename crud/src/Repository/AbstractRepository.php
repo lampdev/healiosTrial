@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\EntityInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 abstract class AbstractRepository extends ServiceEntityRepository
@@ -21,6 +23,29 @@ abstract class AbstractRepository extends ServiceEntityRepository
         $manager = $this->getEntityManager();
         $manager->persist($entity);
         $manager->flush();
+    }
+
+    /**
+     * @param EntityInterface $entity
+     * @return bool
+     */
+    public function delete(EntityInterface $entity): bool
+    {
+        $manager = $this->getEntityManager();
+
+        try {
+            $manager->remove($entity);
+        } catch (ORMException $e) {
+            return false;
+        }
+
+        try {
+            $manager->flush();
+        } catch (OptimisticLockException | ORMException $e) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

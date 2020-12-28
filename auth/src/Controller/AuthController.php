@@ -16,6 +16,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class AuthController extends AbstractController
 {
+    private const DEFAULT_ROLE = 0;
+
     /**
      * @Route("/api/register", name="auth.register", methods={"POST"})
      * @param Request $request
@@ -26,10 +28,11 @@ class AuthController extends AbstractController
     {
         try {
             $response = $guzzleClient->post(getenv('CRUD_HOST') . '/users/store', [
-                'form_params' => [
+                'json' => [
                     'name' => (string)$request->get('name', ''),
                     'email' => (string)$request->get('email', ''),
-                    'password' => (string)$request->get('password', '')
+                    'password' => (string)$request->get('password', ''),
+                    'role_id' => self::DEFAULT_ROLE,
                 ]
             ]);
         } catch (RequestException $e) {

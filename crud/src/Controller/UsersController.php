@@ -73,12 +73,7 @@ class UsersController extends AbstractController
         }
 
         $user = new User();
-        $user->setName($this->userRequest->name);
-        $user->setEmail($this->userRequest->email);
-        $user->setPassword($encoder->encodePassword($user, $this->userRequest->password));
-        $user->setRole($this->userRequest->role);
-        $this->userRepository->plush($user);
-        $this->setUserResponse($user);
+        $this->persistUser($user, $encoder);
 
         return new JsonResponse($this->userResponse);
     }
@@ -103,15 +98,71 @@ class UsersController extends AbstractController
     }
 
     /**
+     * @Route("/users/update/{id}", name="users.update", methods={"PUT"})
+     * @param int $id
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
+     * @return JsonResponse
+     */
+    public function updateAction(int $id, Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
+    {
+        $this->setUserRequest($request);
+        $violations = $this->validateUserRequest();
+
+        if (count($violations) > 0) {
+            return new JsonResponse(['errors' => (string)$violations], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if ($this->userRepository->findOneBy(['email' => $this->userRequest->email])) {
+            return new JsonResponse(['errors' => 'This email is already in use'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        /** @var User|null $user */
+        $user = $this->userRepository->find($id);
+
+        if (!$user) {
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
+
+        $this->persistUser($user, $encoder);
+
+        return new JsonResponse($this->userResponse);
+    }
+
+    /**
+     * @Route("/users/delete/{id}", name="users.delete", methods={"DELETE"})
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function deleteAction(int $id): JsonResponse
+    {
+        /** @var User|null $user */
+        $user = $this->userRepository->find($id);
+
+        if (!$user) {
+            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+        }
+
+        $removed = $this->userRepository->delete($user);
+
+        if (!$removed) {
+            return new JsonResponse(['errors' => 'Entity was not removed'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(['success' => true]);
+    }
+
+    /**
      * @param Request $request
      */
     private function setUserRequest(Request $request): void
     {
-        $roleId = (int)$request->get('role_id', 0);
+        $data = json_decode($request->getContent(), true);
+        $roleId = (int)$data['role_id'];
         $role = $this->rolesManager->findOrDefault($roleId);
-        $this->userRequest->name = (string)$request->get('name', '');
-        $this->userRequest->email = (string)$request->get('email', '');
-        $this->userRequest->password = (string)$request->get('password', '');
+        $this->userRequest->name = (string)$data['name'];
+        $this->userRequest->email = (string)$data['email'];
+        $this->userRequest->password = (string)$data['password'];
         $this->userRequest->role = $role;
     }
 
@@ -164,11 +215,25 @@ class UsersController extends AbstractController
     /**
      * @param User $user
      */
-    public function setUserResponse(User $user): void
+    private function setUserResponse(User $user): void
     {
         $this->userResponse->id = $user->getId();
         $this->userResponse->name = $user->getName();
         $this->userResponse->email = $user->getEmail();
         $this->userResponse->isAdmin =  $this->rolesManager->isAdmin($user);
+    }
+
+    /**
+     * @param User $user
+     * @param UserPasswordEncoderInterface $encoder
+     */
+    private function persistUser(User $user, UserPasswordEncoderInterface $encoder): void
+    {
+        $user->setName($this->userRequest->name);
+        $user->setEmail($this->userRequest->email);
+        $user->setPassword($encoder->encodePassword($user, $this->userRequest->password));
+        $user->setRole($this->userRequest->role);
+        $this->userRepository->plush($user);
+        $this->setUserResponse($user);
     }
 }
