@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/api", name="auth.")
+ */
 class AuthController extends ApiController
 {
     /** @var string */
@@ -20,7 +23,7 @@ class AuthController extends ApiController
     }
 
     /**
-     * @Route("/api/register", name="auth.register", methods={"POST"})
+     * @Route("/register", name="register", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */
@@ -39,7 +42,7 @@ class AuthController extends ApiController
     }
 
     /**
-     * @Route("/api/login", name="auth.login", methods={"POST"})
+     * @Route("/login", name="login", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */

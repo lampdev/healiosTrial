@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * @Route("/api/users", name="users.")
+ */
 class UsersController extends ApiController implements TokenAuthenticatedController
 {
     /** @var string */
@@ -20,7 +23,7 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
     }
 
     /**
-     * @Route("/api/users/store", name="users.store", methods={"POST"})
+     * @Route("/store", name="store", methods={"POST"})
      * @param Request $request
      * @return JsonResponse
      */
@@ -36,21 +39,21 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
             ]
         ];
 
-        return $this->apiRequest(Request::METHOD_POST, $this->crudHost . '/users/store', $options);
+        return $this->apiRequest(Request::METHOD_POST, $this->crudHost . '/api/users/store', $options);
     }
 
     /**
-     * @Route("/api/users/show/{id}", name="users.show", methods={"GET"})
+     * @Route("/show/{id}", name="show", methods={"GET"})
      * @param int $id
      * @return JsonResponse
      */
     public function showAction(int $id): JsonResponse
     {
-        return $this->apiRequest(Request::METHOD_GET, $this->crudHost . '/users/show/' . $id);
+        return $this->apiRequest(Request::METHOD_GET, $this->crudHost . '/api/users/show/' . $id);
     }
 
     /**
-     * @Route("/api/users/update/{id}", name="users.update", methods={"PUT"})
+     * @Route("/update/{id}", name="update", methods={"PUT"})
      * @param int $id
      * @param Request $request
      * @return JsonResponse
@@ -67,16 +70,16 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
             ]
         ];
 
-        return $this->apiRequest(Request::METHOD_PUT, $this->crudHost . '/users/update/' . $id, $options);
+        return $this->apiRequest(Request::METHOD_PUT, $this->crudHost . '/api/users/update/' . $id, $options);
     }
 
     /**
-     * @Route("/api/users/delete/{id}", name="users.delete", methods={"DELETE"})
+     * @Route("/delete/{id}", name="delete", methods={"DELETE"})
      * @param int $id
      * @return JsonResponse
      */
     public function deleteAction(int $id): JsonResponse
     {
-        return $this->apiRequest(Request::METHOD_DELETE, $this->crudHost . '/users/delete/' . $id);
+        return $this->apiRequest(Request::METHOD_DELETE, $this->crudHost . '/api/users/delete/' . $id);
     }
 }

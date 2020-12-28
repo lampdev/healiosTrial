@@ -24,6 +24,9 @@ use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validation;
 
+/**
+ * @Route("/api/users", name="users.")
+ */
 class UsersController extends AbstractController
 {
     /** @var UserRepository */
@@ -61,7 +64,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/users/store", name="users.store", methods={"POST"})
+     * @Route("/store", name="store", methods={"POST"})
      * @param Request $request
      * @param UserPasswordEncoderInterface $encoder
      * @return JsonResponse
@@ -86,7 +89,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/users/show/{id}", name="users.show", methods={"GET"})
+     * @Route("/show/{id}", name="show", methods={"GET"})
      * @param int $id
      * @return JsonResponse
      */
@@ -105,7 +108,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/users/update/{id}", name="users.update", methods={"PUT"})
+     * @Route("/update/{id}", name="update", methods={"PUT"})
      * @param int $id
      * @param Request $request
      * @param UserPasswordEncoderInterface $encoder
@@ -140,7 +143,7 @@ class UsersController extends AbstractController
     }
 
     /**
-     * @Route("/users/delete/{id}", name="users.delete", methods={"DELETE"})
+     * @Route("/delete/{id}", name="delete", methods={"DELETE"})
      * @param int $id
      * @return JsonResponse
      */

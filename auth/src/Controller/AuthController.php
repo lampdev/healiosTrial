@@ -14,12 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+/**
+ * @Route("/api", name="auth.")
+ */
 class AuthController extends AbstractController
 {
     private const DEFAULT_ROLE_ID = 0;
 
     /**
-     * @Route("/api/register", name="auth.register", methods={"POST"})
+     * @Route("/register", name="register", methods={"POST"})
      * @param Request $request
      * @param CustomGuzzleClient $guzzleClient
      * @return JsonResponse
@@ -27,7 +30,7 @@ class AuthController extends AbstractController
     public function registerAction(Request $request, CustomGuzzleClient $guzzleClient): JsonResponse
     {
         try {
-            $response = $guzzleClient->post(getenv('CRUD_HOST') . '/users/store', [
+            $response = $guzzleClient->post(getenv('CRUD_HOST') . '/api/users/store', [
                 'json' => [
                     'name' => (string)$request->get('name', ''),
                     'email' => (string)$request->get('email', ''),
@@ -45,7 +48,7 @@ class AuthController extends AbstractController
     }
 
     /**
-     * @Route("/api/current", name="auth.current", methods={"GET"})
+     * @Route("/current", name="current", methods={"GET"})
      * @param TokenStorageInterface $storage
      * @return JsonResponse
      */
