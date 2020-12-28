@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=RefreshTokenRepository::class)
  * @ORM\Table(name="refresh_tokens")
  */
-class RefreshToken
+class RefreshToken implements EntityInterface
 {
     /**
      * @ORM\Id

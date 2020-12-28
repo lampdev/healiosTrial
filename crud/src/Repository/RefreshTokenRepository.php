@@ -16,4 +16,21 @@ class RefreshTokenRepository extends AbstractRepository
     {
         return RefreshToken::class;
     }
+
+    /**
+     * @param string $oldEmail
+     * @param string $newEmail
+     */
+    public function updateTokenEmail(string $oldEmail, string $newEmail): void
+    {
+        $this->createQueryBuilder('token')
+            ->update()
+            ->set('token.username', ':newEmail')
+            ->where('token.username = :oldEmail')
+            ->setParameter('newEmail', $newEmail)
+            ->setParameter('oldEmail', $oldEmail)
+            ->getQuery()
+            ->execute()
+        ;
+    }
 }

@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\RefreshTokenRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Requests\UserRequest;
 use App\Responses\UserResponse;
+use App\Services\RequestDataParser;
 use App\Services\RolesManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,6 +32,9 @@ class UsersController extends AbstractController
     /** @var RoleRepository */
     private $roleRepository;
 
+    /** @var RefreshTokenRepository */
+    private $refreshTokenRepository;
+
     /** @var RolesManager */
     private $rolesManager;
 
@@ -42,12 +47,14 @@ class UsersController extends AbstractController
     public function __construct(
         UserRepository $userRepository,
         RoleRepository $roleRepository,
+        RefreshTokenRepository $refreshTokenRepository,
         RolesManager $rolesManager,
         UserRequest $userRequest,
         UserResponse $userResponse
     ) {
         $this->userRepository = $userRepository;
         $this->roleRepository = $roleRepository;
+        $this->refreshTokenRepository = $refreshTokenRepository;
         $this->rolesManager = $rolesManager;
         $this->userRequest = $userRequest;
         $this->userResponse = $userResponse;
@@ -124,8 +131,10 @@ class UsersController extends AbstractController
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);
         }
 
+        $oldEmail = $user->getEmail();
         $this->persistUser($user, $encoder);
-        // @todo: Update refresh token
+        $newEmail = $user->getEmail();
+        $this->refreshTokenRepository->updateTokenEmail($oldEmail, $newEmail);
 
         return new JsonResponse($this->userResponse);
     }
@@ -158,12 +167,12 @@ class UsersController extends AbstractController
      */
     private function setUserRequest(Request $request): void
     {
-        $data = json_decode($request->getContent(), true);
-        $roleId = (int)$data['role_id'];
+        $request = RequestDataParser::transformJsonBody($request);
+        $roleId = (int)$request->get('role_id', 0);
         $role = $this->rolesManager->findOrDefault($roleId);
-        $this->userRequest->name = (string)$data['name'];
-        $this->userRequest->email = (string)$data['email'];
-        $this->userRequest->password = (string)$data['password'];
+        $this->userRequest->name = (string)$request->get('name', '');
+        $this->userRequest->email = (string)$request->get('email', '');
+        $this->userRequest->password = (string)$request->get('password', '');
         $this->userRequest->role = $role;
     }
 
@@ -221,7 +230,7 @@ class UsersController extends AbstractController
         $this->userResponse->id = $user->getId();
         $this->userResponse->name = $user->getName();
         $this->userResponse->email = $user->getEmail();
-        $this->userResponse->isAdmin =  $this->rolesManager->isAdmin($user);
+        $this->userResponse->isAdmin = $this->rolesManager->isAdmin($user);
     }
 
     /**
