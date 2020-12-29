@@ -8,9 +8,9 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use SharedServices\GuzzleRequestExceptionTransformer;
-use SharedServices\GuzzleResponseTransformer;
-use SharedServices\JsonRequestDataKeeper;
+use SharedServices\Services\GuzzleRequestExceptionTransformer;
+use SharedServices\Services\GuzzleResponseTransformer;
+use SharedServices\Services\JsonRequestDataKeeper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,7 +50,7 @@ class AuthController extends AbstractController
      */
     public function login(Request $request): JsonResponse
     {
-        $request = JsonRequestDataKeeper::keepJson($request);
+        $request = \SharedServices\Services\JsonRequestDataKeeper::keepJson($request);
         $email = (string)$request->get('email', '');
 
         try {

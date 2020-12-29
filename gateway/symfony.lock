@@ -1,7 +1,4 @@
 {
-    "composer/package-versions-deprecated": {
-        "version": "1.11.99.1"
-    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -234,9 +231,6 @@
     },
     "symfony/mime": {
         "version": "v4.4.18"
-    },
-    "symfony/orm-pack": {
-        "version": "v2.1.0"
     },
     "symfony/phpunit-bridge": {
         "version": "4.3",

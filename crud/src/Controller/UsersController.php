@@ -9,7 +9,7 @@ use App\Repository\UserRepository;
 use App\Requests\UserRequest;
 use App\Responses\UserResponse;
 use App\Services\RolesManager;
-use SharedServices\JsonRequestDataKeeper;
+use SharedServices\Services\JsonRequestDataKeeper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
