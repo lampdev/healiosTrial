@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Models\User;
+use App\Services\GuzzleRequestExceptionTransformer;
 use App\Services\GuzzleResponseTransformer;
 use App\Services\JsonRequestDataKeeper;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -65,6 +67,32 @@ class AuthController extends AbstractController
         $handler->handleAuthenticationSuccess($user, $token);
 
         return new JsonResponse(['token' => $token]);
+    }
+
+    /**
+     * @Route("/register", name="register", methods={"POST"})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function registerAction(Request $request): JsonResponse
+    {
+        $request = JsonRequestDataKeeper::keepJson($request);
+
+        try {
+            $response = $this->guzzleClient->post($this->crudHost . '/api/users/store', [
+                'json' => [
+                    'name' => (string)$request->get('name', ''),
+                    'email' => (string)$request->get('email', ''),
+                    'password' => (string)$request->get('password', '')
+                ]
+            ]);
+        } catch (RequestException $e) {
+            return new JsonResponse(['errors' => GuzzleRequestExceptionTransformer::toString($e)], $e->getCode());
+        } catch (GuzzleException $e) {
+            return new JsonResponse(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return new JsonResponse(GuzzleResponseTransformer::toArray($response), Response::HTTP_OK);
     }
 
     /**

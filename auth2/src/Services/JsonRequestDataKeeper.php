@@ -17,7 +17,7 @@ class JsonRequestDataKeeper
     {
         $data = json_decode($request->getContent(), true);
 
-        if (!is_array($data)) {
+        if (!is_array($data) || count($data) == 0) {
             return $request;
         }
 
