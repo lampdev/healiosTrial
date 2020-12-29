@@ -23,6 +23,9 @@
     "guzzlehttp/psr7": {
         "version": "1.7.0"
     },
+    "lampdev/healios-trial-shared-services": {
+        "version": "v1.0.0"
+    },
     "lcobucci/jwt": {
         "version": "3.4.2"
     },
