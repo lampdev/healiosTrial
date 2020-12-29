@@ -91,12 +91,3 @@ services:
     volumes:
       - ../gateway:/var/www/html
       - gateway_vendor:/var/www/html/vendor
-
-  skeleton:
-    build:
-      context: ../skeleton
-      dockerfile: ../docker/images/symfony/Dockerfile
-    ports:
-      - 8087:80
-    volumes:
-      - ../skeleton:/var/www/html
