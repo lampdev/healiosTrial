@@ -4,45 +4,43 @@ namespace App\Tests\TestCases;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class FeatureTestCase extends WebTestCase
 {
-    /**
-     * @return string
-     */
-    protected function getUniqueAndValidName(): string
-    {
-        return 'someName' . rand(0, 100) . microtime(true);
-    }
+    /** @var KernelBrowser|null */
+    private static $client = null;
 
     /**
-     * @return string
+     * @return KernelBrowser
      */
-    protected function getUniqueAndValidEmail(): string
+    protected static function getClient(): KernelBrowser
     {
-        return 'someEmail' . rand(0, 100) . microtime(true) . '@email.com';
+        if (self::$client instanceof KernelBrowser) {
+            return self::$client;
+        }
+
+        self::$client = static::createClient();
+
+        return self::$client;
     }
 
-    /**
-     * @param KernelBrowser $client
-     */
-    protected function loginAsUser(KernelBrowser $client): void
+    protected function loginAsUser(): void
     {
-        $client->request('POST', '/api/login', [
+        $this->post('/api/login', [
             'email' => 'user@email.com',
             'password' => 'password',
         ]);
     }
 
     /**
-     * @param KernelBrowser $client
      * @return array
      */
-    protected function getArrayResponse(KernelBrowser $client): array
+    protected function getArrayResponse(): array
     {
-        $response = $client->getResponse();
+        $response = self::getClient()->getResponse();
 
         if (!$response instanceof JsonResponse) {
             return [];
@@ -51,20 +49,96 @@ class FeatureTestCase extends WebTestCase
         return json_decode($response->getContent(), true);
     }
 
-    /**
-     * @param KernelBrowser $client
-     */
-    protected function assertResponseOk(KernelBrowser $client): void
+    protected function assertResponseOk(): void
     {
-        $this->assertResponseStatus(Response::HTTP_OK, $client);
+        $this->assertResponseStatus(Response::HTTP_OK);
     }
 
     /**
      * @param int $code
-     * @param KernelBrowser $client
      */
-    protected function assertResponseStatus(int $code, KernelBrowser $client): void
+    protected function assertResponseStatus(int $code): void
     {
-        $this->assertEquals($code, $client->getResponse()->getStatusCode());
+        $this->assertEquals($code, self::getClient()->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @param string $uri
+     * @param array $parameters
+     * @param array $files
+     * @param array $server
+     * @param string|null $content
+     * @param bool $changeHistory
+     * @return Crawler|null
+     */
+    protected function post(
+        string $uri,
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
+        string $content = null,
+        bool $changeHistory = true
+    ): ?Crawler {
+        return self::getClient()->request('POST', $uri, $parameters, $files, $server, $content, $changeHistory);
+    }
+
+    /**
+     * @param string $uri
+     * @param array $parameters
+     * @param array $files
+     * @param array $server
+     * @param string|null $content
+     * @param bool $changeHistory
+     * @return Crawler|null
+     */
+    protected function get(
+        string $uri,
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
+        string $content = null,
+        bool $changeHistory = true
+    ): ?Crawler {
+        return self::getClient()->request('GET', $uri, $parameters, $files, $server, $content, $changeHistory);
+    }
+
+    /**
+     * @param string $uri
+     * @param array $parameters
+     * @param array $files
+     * @param array $server
+     * @param string|null $content
+     * @param bool $changeHistory
+     * @return Crawler|null
+     */
+    protected function put(
+        string $uri,
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
+        string $content = null,
+        bool $changeHistory = true
+    ): ?Crawler {
+        return self::getClient()->request('PUT', $uri, $parameters, $files, $server, $content, $changeHistory);
+    }
+
+    /**
+     * @param string $uri
+     * @param array $parameters
+     * @param array $files
+     * @param array $server
+     * @param string|null $content
+     * @param bool $changeHistory
+     * @return Crawler|null
+     */
+    protected function delete(
+        string $uri,
+        array $parameters = [],
+        array $files = [],
+        array $server = [],
+        string $content = null,
+        bool $changeHistory = true
+    ): ?Crawler {
+        return self::getClient()->request('DELETE', $uri, $parameters, $files, $server, $content, $changeHistory);
     }
 }
