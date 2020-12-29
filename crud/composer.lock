@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "81f89b65c1cdcacf55767f814170c894",
+    "content-hash": "e2e3759f44d6b58161b97b6abd45b9ed",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -2213,16 +2213,16 @@
         },
         {
             "name": "stas-lampdev/healios-trial-shared-services",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/StasLampdev/healiosTrialSharedServices.git",
-                "reference": "cb697cc7aa9e187ab0f124d0cf8aa4a96588168c"
+                "reference": "8e9d6ba792e29758a817fca927beaa835a7734a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/StasLampdev/healiosTrialSharedServices/zipball/cb697cc7aa9e187ab0f124d0cf8aa4a96588168c",
-                "reference": "cb697cc7aa9e187ab0f124d0cf8aa4a96588168c",
+                "url": "https://api.github.com/repos/StasLampdev/healiosTrialSharedServices/zipball/8e9d6ba792e29758a817fca927beaa835a7734a5",
+                "reference": "8e9d6ba792e29758a817fca927beaa835a7734a5",
                 "shasum": ""
             },
             "require": {
@@ -2237,8 +2237,8 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "SharedServices\\": "src/",
-                    "SharedServices\\Tests\\": "tests/"
+                    "HealiosTrial\\": "src/",
+                    "HealiosTrial\\Tests\\": "tests/"
                 }
             },
             "license": [
@@ -2246,10 +2246,10 @@
             ],
             "description": "Shared services for Healios trial task",
             "support": {
-                "source": "https://github.com/StasLampdev/healiosTrialSharedServices/tree/v1.0.1",
+                "source": "https://github.com/StasLampdev/healiosTrialSharedServices/tree/v1.0.2",
                 "issues": "https://github.com/StasLampdev/healiosTrialSharedServices/issues"
             },
-            "time": "2020-12-29T17:33:47+00:00"
+            "time": "2020-12-29T18:32:36+00:00"
         },
         {
             "name": "symfony/cache",
