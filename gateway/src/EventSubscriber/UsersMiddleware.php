@@ -1,10 +1,11 @@
 <?php
+/** @noinspection PhpUnused */
 
 namespace App\EventSubscriber;
 
 use App\Controller\TokenAuthenticatedController;
-use App\Services\RequestDataParser;
-use App\Services\UserInfoRetriever;
+use App\Services\UserRetriever;
+use HealiosTrial\Services\JsonRequestDataKeeper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,10 +21,10 @@ class UsersMiddleware implements EventSubscriberInterface
         '/api/users/delete',
     ];
 
-    /** @var UserInfoRetriever */
+    /** @var UserRetriever */
     private $userInfoRetriever;
 
-    public function __construct(UserInfoRetriever $userInfoRetriever)
+    public function __construct(UserRetriever $userInfoRetriever)
     {
         $this->userInfoRetriever = $userInfoRetriever;
     }
@@ -45,30 +46,24 @@ class UsersMiddleware implements EventSubscriberInterface
         }
 
         $request = $event->getRequest();
-        $userId = $this->userInfoRetriever->getUserIdByToken($request);
+        $user = $this->userInfoRetriever->getUserByToken($request);
 
-        if (!$userId) {
+        if (!$user) {
             throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
         }
 
-        $isAdmin = $this->userInfoRetriever->isAdmin($userId);
-
-        if (is_null($isAdmin)) {
-            throw new HttpException(Response::HTTP_NOT_FOUND, 'User not found');
-        }
-
-        if ($isAdmin) {
+        if ($user->isAdmin) {
             return;
         }
 
-        $defaultUserEndpoints = $this->getDefaultUserEndpoints($userId);
+        $defaultUserEndpoints = $this->getDefaultUserEndpoints($user->id);
         $requestUri = $request->getRequestUri();
 
         if (!in_array($requestUri, $defaultUserEndpoints)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied');
         }
 
-        $request = RequestDataParser::transformJsonBody($request);
+        $request = JsonRequestDataKeeper::keepJson($request);
 
         if ((int)$request->get('role_id', 0)) {
             throw new HttpException(Response::HTTP_FORBIDDEN, 'Role updating forbidden');

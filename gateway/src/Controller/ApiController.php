@@ -2,22 +2,23 @@
 
 namespace App\Controller;
 
-use App\Services\CustomGuzzleClient;
-use App\Services\RequestExceptionParser;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use HealiosTrial\Services\GuzzleRequestExceptionTransformer;
+use HealiosTrial\Services\GuzzleResponseTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ApiController extends AbstractController
 {
-    /** @var CustomGuzzleClient */
-    protected $customGuzzleClient;
+    /** @var Client */
+    protected $guzzleClient;
 
-    public function __construct(CustomGuzzleClient $guzzleClient)
+    public function __construct()
     {
-        $this->customGuzzleClient = $guzzleClient;
+        $this->guzzleClient = new Client();
     }
 
     /**
@@ -29,13 +30,15 @@ class ApiController extends AbstractController
     protected function apiRequest(string $method, string $url, array $options = []): JsonResponse
     {
         try {
-            $response = $this->customGuzzleClient->request($method, $url, $options);
+            $response = $this->guzzleClient->request($method, $url, $options);
         } catch (RequestException $e) {
-            return new JsonResponse(['errors' => RequestExceptionParser::getErrors($e)], $e->getCode());
+            return new JsonResponse(['errors' => GuzzleRequestExceptionTransformer::toString($e)], $e->getCode());
         } catch (GuzzleException $e) {
             return new JsonResponse(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse($response->arrayData, $response->statusCode);
+        $responseData = GuzzleResponseTransformer::toArray($response);
+
+        return new JsonResponse($responseData, $response->getStatusCode());
     }
 }

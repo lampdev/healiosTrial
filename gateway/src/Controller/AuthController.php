@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use App\Services\CustomGuzzleClient;
-use App\Services\RequestDataParser;
+use HealiosTrial\Services\JsonRequestDataKeeper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,9 +15,9 @@ class AuthController extends ApiController
     /** @var string */
     private $authHost;
 
-    public function __construct(CustomGuzzleClient $guzzleClient)
+    public function __construct()
     {
-        parent::__construct($guzzleClient);
+        parent::__construct();
         $this->authHost = (string)getenv('AUTH_HOST');
     }
 
@@ -29,9 +28,9 @@ class AuthController extends ApiController
      */
     public function registerAction(Request $request): JsonResponse
     {
-        $request = RequestDataParser::transformJsonBody($request);
+        $request = JsonRequestDataKeeper::keepJson($request);
         $options = [
-            'form_params' => [
+            'json' => [
                 'name' => (string)$request->get('name', ''),
                 'email' => (string)$request->get('email', ''),
                 'password' => (string)$request->get('password', ''),
@@ -48,31 +47,14 @@ class AuthController extends ApiController
      */
     public function loginAction(Request $request): JsonResponse
     {
-        $request = RequestDataParser::transformJsonBody($request);
+        $request = JsonRequestDataKeeper::keepJson($request);
         $options = [
             'json' => [
-                'username' => (string)$request->get('username', ''),
+                'email' => (string)$request->get('email', ''),
                 'password' => (string)$request->get('password', ''),
             ]
         ];
 
         return $this->apiRequest(Request::METHOD_POST, $this->authHost . '/api/login', $options);
-    }
-
-    /**
-     * @Route("/refresh", name="refresh", methods={"POST"})
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function refreshAction(Request $request): JsonResponse
-    {
-        $request = RequestDataParser::transformJsonBody($request);
-        $options = [
-            'json' => [
-                'refresh_token' => (string)$request->get('refresh_token', '')
-            ]
-        ];
-
-        return $this->apiRequest(Request::METHOD_POST, $this->authHost . '/api/token/refresh', $options);
     }
 }

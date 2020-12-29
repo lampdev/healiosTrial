@@ -2,8 +2,7 @@
 
 namespace App\Controller;
 
-use App\Services\CustomGuzzleClient;
-use App\Services\RequestDataParser;
+use HealiosTrial\Services\JsonRequestDataKeeper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,9 +15,9 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
     /** @var string */
     private $crudHost;
 
-    public function __construct(CustomGuzzleClient $guzzleClient)
+    public function __construct()
     {
-        parent::__construct($guzzleClient);
+        parent::__construct();
         $this->crudHost = (string)getenv('CRUD_HOST');
     }
 
@@ -29,7 +28,7 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
      */
     public function storeAction(Request $request): JsonResponse
     {
-        $request = RequestDataParser::transformJsonBody($request);
+        $request = JsonRequestDataKeeper::keepJson($request);
         $options = [
             'json' => [
                 'name' => (string)$request->get('name', ''),
@@ -60,7 +59,7 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
      */
     public function updateAction(int $id, Request $request): JsonResponse
     {
-        $request = RequestDataParser::transformJsonBody($request);
+        $request = JsonRequestDataKeeper::keepJson($request);
         $options = [
             'json' => [
                 'name' => (string)$request->get('name', ''),
