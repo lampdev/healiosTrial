@@ -16,4 +16,3 @@ security:
       anonymous: true
 
   access_control:
-#        - { path: ^/api/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }

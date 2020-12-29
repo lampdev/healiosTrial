@@ -30,8 +30,7 @@ class RefreshTokenRepository extends AbstractRepository
             ->setParameter('newEmail', $newEmail)
             ->setParameter('oldEmail', $oldEmail)
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
     }
 
     /**
@@ -44,7 +43,6 @@ class RefreshTokenRepository extends AbstractRepository
             ->where('token.username = :email')
             ->setParameter('email', $email)
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
     }
 }
