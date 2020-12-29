@@ -86,11 +86,9 @@ class UsersController extends AbstractController
             return new JsonResponse(['errors' => 'Invalid password'], Response::HTTP_UNAUTHORIZED);
         }
 
-        return new JsonResponse([
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'password' => $user->getPassword(),
-        ]);
+        $this->setUserResponse($user);
+
+        return new JsonResponse($this->userResponse);
     }
 
     /**

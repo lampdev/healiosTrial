@@ -4,6 +4,7 @@ volumes:
   db-volume:
   crud_vendor:
   auth_vendor:
+  auth2_vendor:
   gateway_vendor:
 
 services:
@@ -93,3 +94,20 @@ services:
     volumes:
       - ../gateway:/var/www/html
       - gateway_vendor:/var/www/html/vendor
+
+  auth2:
+    build:
+      context: ../auth2
+      dockerfile: ../docker/images/symfony/Dockerfile
+    env_file:
+      - ../auth/.env
+    environment:
+      SALT: "${SALT:-secureSalt}"
+      CRUD_HOST: "${CRUD_HOST:-http://crud}"
+    depends_on:
+      - db
+    ports:
+      - 8083:80
+    volumes:
+      - ../auth2:/var/www/html
+      - auth2_vendor:/var/www/html/vendor
