@@ -25,4 +25,7 @@ export COMPOSER_ALLOW_SUPERUSER=1
 cd ../auth; composer install
 cd ../crud; composer install
 cd ../gateway; composer install
-cd ..
+cd ../docker;
+
+docker-compose exec gateway php bin/phpunit ./tests/Feature/AuthApiTests.php
+docker-compose exec gateway php bin/phpunit ./tests/Feature/UsersApiTests.php

@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FeatureTestCase extends WebTestCase
 {
+    protected const EXISTING_USER_ID = 2;
+    protected const EXISTING_USER_NAME = 'user';
     protected const EXISTING_USER_EMAIL = 'user@email.com';
     protected const EXISTING_USER_PASSWORD = 'password';
 
