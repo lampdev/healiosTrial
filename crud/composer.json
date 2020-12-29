@@ -1,6 +1,20 @@
 {
     "type": "project",
     "license": "proprietary",
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "stas-lampdev/healios-trial-shared-services",
+                "version": "v1.0.0",
+                "source": {
+                    "url": "https://github.com/StasLampdev/healiosTrialSharedServices.git",
+                    "type": "git",
+                    "reference": "v1.0.0"
+                }
+            }
+        }
+    ],
     "require": {
         "php": ">=7.1.3",
         "ext-ctype": "*",
@@ -11,6 +25,7 @@
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
+        "stas-lampdev/healios-trial-shared-services": "^1.0",
         "symfony/console": "4.4.*",
         "symfony/dotenv": "4.4.*",
         "symfony/flex": "^1.3.1",

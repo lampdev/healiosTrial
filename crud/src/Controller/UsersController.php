@@ -8,8 +8,8 @@ use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Requests\UserRequest;
 use App\Responses\UserResponse;
-use App\Services\RequestDataParser;
 use App\Services\RolesManager;
+use SharedServices\JsonRequestDataKeeper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -71,7 +71,7 @@ class UsersController extends AbstractController
      */
     public function getByCredentials(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
     {
-        $request = RequestDataParser::transformJsonBody($request);
+        $request = JsonRequestDataKeeper::keepJson($request);
         $email = (string)$request->get('email', '');
         $password = (string)$request->get('password', '');
 
@@ -203,7 +203,7 @@ class UsersController extends AbstractController
      */
     private function setUserRequest(Request $request): void
     {
-        $request = RequestDataParser::transformJsonBody($request);
+        $request = JsonRequestDataKeeper::keepJson($request);
         $roleId = (int)$request->get('role_id', 0);
         $role = $this->rolesManager->findOrDefault($roleId);
         $this->userRequest->name = (string)$request->get('name', '');

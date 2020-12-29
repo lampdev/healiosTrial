@@ -10,6 +10,7 @@ RUN set -xe \
     && add-apt-repository ppa:ondrej/php \
     && apt-get update \
     && apt-get -y install \
+        git \
         php7.2 \
         php7.2-dev \
         php7.2-bcmath \
