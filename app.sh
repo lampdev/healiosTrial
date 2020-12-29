@@ -10,7 +10,6 @@ cp ./auth/.env.example ./auth/.env
 cp ./crud/.env.example ./crud/.env
 cp ./docker/.env.example ./docker/.env
 cp ./gateway/.env.example ./gateway/.env
-cp ./auth2/.env.example ./auth2/.env
 
 cd ./docker
 
@@ -26,5 +25,4 @@ export COMPOSER_ALLOW_SUPERUSER=1
 cd ../auth; composer install
 cd ../crud; composer install
 cd ../gateway; composer install
-cd ../auth2; composer install
 cd ..

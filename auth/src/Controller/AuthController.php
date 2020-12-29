@@ -2,10 +2,11 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Services\CustomGuzzleClient;
-use App\Services\RequestDataParser;
-use App\Services\RequestExceptionParser;
+use App\Models\User;
+use App\Services\GuzzleRequestExceptionTransformer;
+use App\Services\GuzzleResponseTransformer;
+use App\Services\JsonRequestDataKeeper;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
@@ -22,77 +23,79 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
  */
 class AuthController extends AbstractController
 {
-    private const DEFAULT_ROLE_ID = 0;
-
-    /** @var CustomGuzzleClient */
-    private $customGuzzleClient;
+    /** @var Client */
+    private $guzzleClient;
 
     /** @var string */
     private $crudHost;
 
-    public function __construct(CustomGuzzleClient $customGuzzleClient)
+    /** @var JWTTokenManagerInterface */
+    private $tokenManager;
+
+    /** @var AuthenticationSuccessHandler */
+    private $authHandler;
+
+    public function __construct(JWTTokenManagerInterface $tokenManager, AuthenticationSuccessHandler $authHandler)
     {
-        $this->customGuzzleClient = $customGuzzleClient;
+        $this->guzzleClient = new Client();
         $this->crudHost = (string)getenv('CRUD_HOST');
+        $this->tokenManager = $tokenManager;
+        $this->authHandler = $authHandler;
     }
 
     /**
      * @Route("/login", name="login", methods={"POST"})
      * @param Request $request
-     * @param JWTTokenManagerInterface $tokenManager
-     * @param AuthenticationSuccessHandler $handler
      * @return JsonResponse
      */
-    public function login(
-        Request $request,
-        JWTTokenManagerInterface $tokenManager,
-        AuthenticationSuccessHandler $handler
-    ) {
-        $request = RequestDataParser::transformJsonBody($request);
-        $password = (string)$request->get('password', '');
+    public function login(Request $request): JsonResponse
+    {
+        $request = JsonRequestDataKeeper::keepJson($request);
+        $email = (string)$request->get('email', '');
 
         try {
-            $response = $this->customGuzzleClient->post($this->crudHost . '/api/users/find-by-credentials', [
+            $response = $this->guzzleClient->post($this->crudHost . '/api/users/find-by-credentials', [
                 'json' => [
-                    'email' => (string)$request->get('username', ''),
-                    'password' => $password
+                    'email' => $email,
+                    'password' => (string)$request->get('password', '')
                 ]
             ]);
         } catch (GuzzleException $e) {
             return new JsonResponse(['errors' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
         }
 
-        $responseData = $response->arrayData;
-        $user = new User($responseData['id'], $responseData['email'], $responseData['password']);
-        $token = $tokenManager->create($user);
-        $handler->handleAuthenticationSuccess($user, $token);
-        dd($token);
+        $response = GuzzleResponseTransformer::toArray($response);
+        $user = User::createFromPayload($email, $response);
+        $token = $this->tokenManager->createFromPayload($user, $response);
+        $this->authHandler->handleAuthenticationSuccess($user, $token);
+
+        return new JsonResponse(['token' => $token]);
     }
 
     /**
      * @Route("/register", name="register", methods={"POST"})
      * @param Request $request
-     * @param CustomGuzzleClient $guzzleClient
      * @return JsonResponse
      */
-    public function registerAction(Request $request, CustomGuzzleClient $guzzleClient): JsonResponse
+    public function registerAction(Request $request): JsonResponse
     {
+        $request = JsonRequestDataKeeper::keepJson($request);
+
         try {
-            $response = $guzzleClient->post(getenv('CRUD_HOST') . '/api/users/store', [
+            $response = $this->guzzleClient->post($this->crudHost . '/api/users/store', [
                 'json' => [
                     'name' => (string)$request->get('name', ''),
                     'email' => (string)$request->get('email', ''),
-                    'password' => (string)$request->get('password', ''),
-                    'role_id' => self::DEFAULT_ROLE_ID,
+                    'password' => (string)$request->get('password', '')
                 ]
             ]);
         } catch (RequestException $e) {
-            return new JsonResponse(['errors' => RequestExceptionParser::getErrors($e)], $e->getCode());
+            return new JsonResponse(['errors' => GuzzleRequestExceptionTransformer::toString($e)], $e->getCode());
         } catch (GuzzleException $e) {
             return new JsonResponse(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return new JsonResponse($response->arrayData, $response->statusCode);
+        return new JsonResponse(GuzzleResponseTransformer::toArray($response), Response::HTTP_OK);
     }
 
     /**
@@ -105,6 +108,6 @@ class AuthController extends AbstractController
         /** @var User $user */
         $user = $storage->getToken()->getUser();
 
-        return new JsonResponse(['id' => $user->getId()]);
+        return new JsonResponse($user->toArray());
     }
 }
