@@ -29,26 +29,29 @@ class AuthController extends AbstractController
     /** @var string */
     private $crudHost;
 
-    public function __construct()
+    /** @var JWTTokenManagerInterface */
+    private $tokenManager;
+
+    /** @var AuthenticationSuccessHandler */
+    private $authHandler;
+
+    public function __construct(JWTTokenManagerInterface $tokenManager, AuthenticationSuccessHandler $authHandler)
     {
         $this->guzzleClient = new Client();
         $this->crudHost = (string)getenv('CRUD_HOST');
+        $this->tokenManager = $tokenManager;
+        $this->authHandler = $authHandler;
     }
 
     /**
      * @Route("/login", name="login", methods={"POST"})
      * @param Request $request
-     * @param JWTTokenManagerInterface $tokenManager
-     * @param AuthenticationSuccessHandler $handler
      * @return JsonResponse
      */
-    public function login(
-        Request $request,
-        JWTTokenManagerInterface $tokenManager,
-        AuthenticationSuccessHandler $handler
-    ) {
+    public function login(Request $request): JsonResponse
+    {
         $request = JsonRequestDataKeeper::keepJson($request);
-        $email = (string)$request->get('username', '');
+        $email = (string)$request->get('email', '');
 
         try {
             $response = $this->guzzleClient->post($this->crudHost . '/api/users/find-by-credentials', [
@@ -63,8 +66,8 @@ class AuthController extends AbstractController
 
         $response = GuzzleResponseTransformer::toArray($response);
         $user = User::createFromPayload($email, $response);
-        $token = $tokenManager->createFromPayload($user, $response);
-        $handler->handleAuthenticationSuccess($user, $token);
+        $token = $this->tokenManager->createFromPayload($user, $response);
+        $this->authHandler->handleAuthenticationSuccess($user, $token);
 
         return new JsonResponse(['token' => $token]);
     }
