@@ -1,9 +1,12 @@
 FROM baseimg
 
+ARG GITHUB_TOKEN
+
 WORKDIR /var/www/html
 
 COPY composer.json ./composer.json
 COPY composer.lock ./composer.lock
+RUN composer config -g github-oauth.github.com $GITHUB_TOKEN
 RUN composer install --no-scripts
 
 COPY . ./

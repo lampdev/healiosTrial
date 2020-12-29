@@ -48,6 +48,8 @@ services:
     build:
       context: ../crud
       dockerfile: ../docker/images/symfony/Dockerfile
+      args:
+        GITHUB_TOKEN: "${GITHUB_TOKEN:-token}"
     env_file:
       - ../crud/.env
     environment:
@@ -64,6 +66,8 @@ services:
     build:
       context: ../auth
       dockerfile: ../docker/images/symfony/Dockerfile
+      args:
+        GITHUB_TOKEN: "${GITHUB_TOKEN:-token}"
     env_file:
       - ../auth/.env
     environment:
@@ -81,6 +85,8 @@ services:
     build:
       context: ../gateway
       dockerfile: ../docker/images/symfony/Dockerfile
+      args:
+        GITHUB_TOKEN: "${GITHUB_TOKEN:-token}"
     env_file:
       - ../gateway/.env
     environment:
