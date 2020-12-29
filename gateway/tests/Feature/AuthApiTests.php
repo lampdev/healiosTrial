@@ -3,17 +3,18 @@
 namespace App\Tests\Feature;
 
 use App\Tests\TestCases\FeatureTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthApiTests extends FeatureTestCase
 {
     private const VALID_PASSWORD = 'SoMeSeCuRePaSsWoRd54535251!!!';
+    private const VALID_NAME = 'SomeUsername';
 
     public function testRegister(): void
     {
-        $name = $this->getUniqueAndValidName();
-        $email = $this->getUniqueAndValidEmail();
+        $email = $this->getNonExistingValidEmail();
         $this->post('/api/register', [
-            'name' => $name,
+            'name' => self::VALID_NAME,
             'email' => $email,
             'password' => self::VALID_PASSWORD,
         ]);
@@ -23,11 +24,72 @@ class AuthApiTests extends FeatureTestCase
         $this->assertGreaterThan(0, $response['id']);
         unset($response['id']);
         $expectedResponse = [
-            'name' => $name,
+            'name' => self::VALID_NAME,
             'email' => $email,
             'isAdmin' => false
         ];
         $this->assertEquals($expectedResponse, $response);
+    }
+
+    public function testRegisterWithExistingEmail(): void
+    {
+        $this->post('/api/register', [
+            'name' => self::VALID_NAME,
+            'email' => self::EXISTING_USER_EMAIL,
+            'password' => self::VALID_PASSWORD,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testRegisterWithWeakPassword(): void
+    {
+        $email = $this->getNonExistingValidEmail();
+        $this->post('/api/register', [
+            'name' => self::VALID_NAME,
+            'email' => $email,
+            'password' => self::EXISTING_USER_PASSWORD,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testRegisterWithoutName(): void
+    {
+        $email = $this->getNonExistingValidEmail();
+        $this->post('/api/register', [
+            'email' => $email,
+            'password' => self::VALID_PASSWORD,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testRegisterWithoutShortName(): void
+    {
+        $email = $this->getNonExistingValidEmail();
+        $this->post('/api/register', [
+            'name' => 'A',
+            'email' => $email,
+            'password' => self::VALID_PASSWORD,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testRegisterWithoutEmail(): void
+    {
+        $this->post('/api/register', [
+            'name' => self::VALID_NAME,
+            'password' => self::VALID_PASSWORD,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testRegisterWithoutPassword(): void
+    {
+        $email = $this->getNonExistingValidEmail();
+        $this->post('/api/register', [
+            'name' => self::VALID_NAME,
+            'email' => $email,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function testLogin(): void
@@ -40,18 +102,44 @@ class AuthApiTests extends FeatureTestCase
         $this->assertGreaterThan(0, strlen($token));
     }
 
-    /**
-     * @return string
-     */
-    private function getUniqueAndValidName(): string
+    public function testLoginWithIncorrectEmail(): void
     {
-        return 'someName' . rand(0, 100) . microtime(true);
+        $this->post('/api/login', [
+            'email' => $this->getNonExistingValidEmail(),
+            'password' => self::EXISTING_USER_PASSWORD,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testLoginWithIncorrectPassword(): void
+    {
+        $this->post('/api/login', [
+            'email' => self::EXISTING_USER_EMAIL,
+            'password' => 'wrongPassword',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testLoginWithoutPassword(): void
+    {
+        $this->post('/api/login', [
+            'email' => self::EXISTING_USER_EMAIL,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    public function testLoginWithoutEmail(): void
+    {
+        $this->post('/api/login', [
+            'password' => self::EXISTING_USER_PASSWORD,
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNAUTHORIZED);
     }
 
     /**
      * @return string
      */
-    private function getUniqueAndValidEmail(): string
+    private function getNonExistingValidEmail(): string
     {
         return 'someEmail' . rand(0, 100) . microtime(true) . '@email.com';
     }

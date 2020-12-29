@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FeatureTestCase extends WebTestCase
 {
+    protected const EXISTING_USER_EMAIL = 'user@email.com';
+    protected const EXISTING_USER_PASSWORD = 'password';
+
     /** @var KernelBrowser|null */
     private static $client = null;
 
@@ -30,8 +33,8 @@ class FeatureTestCase extends WebTestCase
     protected function loginAsUser(): void
     {
         $this->post('/api/login', [
-            'email' => 'user@email.com',
-            'password' => 'password',
+            'email' => self::EXISTING_USER_EMAIL,
+            'password' => self::EXISTING_USER_PASSWORD,
         ]);
     }
 
