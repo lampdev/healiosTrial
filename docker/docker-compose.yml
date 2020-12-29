@@ -71,8 +71,6 @@ services:
     environment:
       SALT: "${SALT:-secureSalt}"
       CRUD_HOST: "${CRUD_HOST:-http://crud}"
-    depends_on:
-      - db
     ports:
       - 8082:80
     volumes:
@@ -88,8 +86,6 @@ services:
     environment:
       CRUD_HOST: "${CRUD_HOST:-http://crud}"
       AUTH_HOST: "${AUTH_HOST:-http://auth}"
-    depends_on:
-      - db
     ports:
       - 80:80
     volumes:
