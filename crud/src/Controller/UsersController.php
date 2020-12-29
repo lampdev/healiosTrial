@@ -64,6 +64,36 @@ class UsersController extends AbstractController
     }
 
     /**
+     * @Route("/find-by-credentials", name="find-by-credentials", methods={"POST"})
+     * @param Request $request
+     * @param UserPasswordEncoderInterface $encoder
+     * @return JsonResponse
+     */
+    public function getByCredentials(Request $request, UserPasswordEncoderInterface $encoder): JsonResponse
+    {
+        $request = RequestDataParser::transformJsonBody($request);
+        $email = (string)$request->get('email', '');
+        $password = (string)$request->get('password', '');
+
+        /** @var User|null $user */
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+
+        if (!$user) {
+            return new JsonResponse(['errors' => 'User not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (!$encoder->isPasswordValid($user, $password)) {
+            return new JsonResponse(['errors' => 'Invalid password'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return new JsonResponse([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'password' => $user->getPassword(),
+        ]);
+    }
+
+    /**
      * @Route("/store", name="store", methods={"POST"})
      * @param Request $request
      * @param UserPasswordEncoderInterface $encoder
