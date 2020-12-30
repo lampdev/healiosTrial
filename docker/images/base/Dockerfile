@@ -38,4 +38,4 @@ RUN set -xe \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
 
-RUN composer config --global --auth github-oauth.github.com $GITHUB_TOKEN
+COPY ./config /root/.config/composer
