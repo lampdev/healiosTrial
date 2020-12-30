@@ -7,6 +7,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UsersApiTests extends FeatureTestCase
 {
+    public function testStore(): void
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $this->post('/api/users/store', [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_FORBIDDEN);
+    }
+
     public function testShow(): void
     {
         $this->loginAsUser();
@@ -53,6 +63,105 @@ class UsersApiTests extends FeatureTestCase
         $this->assertEquals($expectedResponse, $response);
     }
 
+    public function testUpdateWithExistingEmail()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $newName = 'SomeName';
+        $newPassword = 'NeWPasWord!2341**';
+        $newData = [
+            'name' => $newName,
+            'email' => self::EXISTING_USER_EMAIL,
+            'password' => $newPassword
+        ];
+        $this->put('/api/users/update/' . $newUserData['id'], $newData, [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+    public function testUpdateWithWeakPassword()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $newEmail = $this->getNonExistingValidEmail();
+        $newName = 'SomeName';
+        $newData = [
+            'name' => $newName,
+            'email' => $newEmail,
+            'password' => '1111'
+        ];
+        $this->put('/api/users/update/' . $newUserData['id'], $newData, [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+    public function testUpdateWithShortName()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $newEmail = $this->getNonExistingValidEmail();
+        $newPassword = 'NeWPasWord!2341**';
+        $newData = [
+            'name' => 'S',
+            'email' => $newEmail,
+            'password' => $newPassword
+        ];
+        $this->put('/api/users/update/' . $newUserData['id'], $newData, [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testUpdateWithoutName()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $newEmail = $this->getNonExistingValidEmail();
+        $newPassword = 'NeWPasWord!2341**';
+        $newData = [
+            'name' => '',
+            'email' => $newEmail,
+            'password' => $newPassword
+        ];
+        $this->put('/api/users/update/' . $newUserData['id'], $newData, [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+    }
+
+    public function testUpdateWithoutEmail()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $newPassword = 'NeWPasWord!2341**';
+        $newData = [
+            'name' => 'SomeName',
+            'email' => '',
+            'password' => $newPassword
+        ];
+        $this->put('/api/users/update/' . $newUserData['id'], $newData, [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testUpdateWithoutPassword()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $newEmail = $this->getNonExistingValidEmail();
+        $newData = [
+            'name' => 'SomeName',
+            'email' => $newEmail,
+            'password' => '',
+        ];
+        $this->put('/api/users/update/' . $newUserData['id'], $newData, [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
     public function testDelete(): void
     {
         $newUserData = $this->registerAndLoginAsNewUser();
@@ -63,21 +172,35 @@ class UsersApiTests extends FeatureTestCase
         $this->assertResponseOk();
     }
 
-    /**
-     * @return array
-     */
-    private function registerAndLoginAsNewUser(): array
+    public function testShowAnotherUser()
     {
-        $email = $this->registerAsUser();
-        $response = $this->getArrayResponse();
-        $id = $response['id'];
-        $this->loginAsUser($email, self::VALID_PASSWORD);
-        $response = $this->getArrayResponse();
-        $token = $response['token'];
-
-        return [
-            'id' => $id,
-            'token' => $token
-        ];
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $this->get('/api/users/show/' . self::EXISTING_USER_ID, [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_FORBIDDEN);
     }
+
+    public function testUpdateAnotherUser()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $this->put('/api/users/update/' . self::EXISTING_USER_ID, [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testDeleteAnotherUser()
+    {
+        $newUserData = $this->registerAndLoginAsNewUser();
+        $this->delete('/api/users/delete/' . self::EXISTING_USER_ID, [], [], [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $newUserData['token'],
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+        $this->assertResponseStatus(Response::HTTP_FORBIDDEN);
+    }
+
+
 }

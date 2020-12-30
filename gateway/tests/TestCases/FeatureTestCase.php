@@ -10,6 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FeatureTestCase extends WebTestCase
 {
+    protected const EXISTING_ADMIN_ID = 1;
+    protected const EXISTING_ADMIN_NAME = 'admin';
+    protected const EXISTING_ADMIN_EMAIL = 'admin@email.com';
+    protected const EXISTING_ADMIN_PASSWORD = 'password';
+
     protected const EXISTING_USER_ID = 2;
     protected const EXISTING_USER_NAME = 'user';
     protected const EXISTING_USER_EMAIL = 'user@email.com';
@@ -32,6 +37,11 @@ class FeatureTestCase extends WebTestCase
         self::$client = static::createClient();
 
         return self::$client;
+    }
+
+    protected function loginAsAdmin(): void
+    {
+        $this->loginAsUser(self::EXISTING_ADMIN_EMAIL, self::EXISTING_ADMIN_PASSWORD);
     }
 
     /**
@@ -189,5 +199,23 @@ class FeatureTestCase extends WebTestCase
     protected function getNonExistingValidEmail(): string
     {
         return 'someEmail' . rand(0, 100) . microtime(true) . '@email.com';
+    }
+
+    /**
+     * @return array
+     */
+    protected function registerAndLoginAsNewUser(): array
+    {
+        $email = $this->registerAsUser();
+        $response = $this->getArrayResponse();
+        $id = $response['id'];
+        $this->loginAsUser($email, self::VALID_PASSWORD);
+        $response = $this->getArrayResponse();
+        $token = $response['token'];
+
+        return [
+            'id' => $id,
+            'token' => $token
+        ];
     }
 }
