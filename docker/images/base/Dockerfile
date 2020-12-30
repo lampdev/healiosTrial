@@ -1,6 +1,7 @@
 FROM ubuntu
 
 ARG SYSTEM_TZ
+ARG GITHUB_TOKEN
 
 RUN ln -snf /usr/share/zoneinfo/$SYSTEM_TZ /etc/localtime && echo $SYSTEM_TZ > /etc/timezone
 
@@ -36,3 +37,5 @@ RUN set -xe \
 RUN set -xe \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
+
+RUN composer config --global --auth github-oauth.github.com $GITHUB_TOKEN

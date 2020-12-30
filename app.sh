@@ -16,6 +16,12 @@ cd ./docker
 docker-compose down -v --remove-orphans
 
 if [ "$BUILD_OPTION" = "build" ]; then
+    rm -rf ../auth/vendor
+    rm -rf ../auth/var
+    rm -rf ../crud/vendor
+    rm -rf ../crud/var
+    rm -rf ../gateway/vendor
+    rm -rf ../gateway/var
     docker-compose build
 fi
 
