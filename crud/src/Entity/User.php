@@ -15,7 +15,7 @@ class User implements EntityInterface, UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @var int
+     * @var int|null
      */
     private $id;
 
@@ -45,9 +45,9 @@ class User implements EntityInterface, UserInterface
     private $role;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

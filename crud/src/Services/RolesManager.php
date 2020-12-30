@@ -30,8 +30,9 @@ class RolesManager
     public function isAdmin(User $user): bool
     {
         $adminRole = $this->getAdminRole();
+        $userRole = $user->getRole();
 
-        return $adminRole->getId() === $user->getRole()->getId();
+        return $adminRole->getId() === $userRole->getId() && $adminRole->getName() === $userRole->getName();
     }
 
     /**
