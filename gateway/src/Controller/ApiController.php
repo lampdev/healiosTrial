@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use GuzzleHttp\Client;
+use App\Wrappers\GuzzleClientWrapper;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use HealiosTrial\Services\GuzzleRequestExceptionTransformer;
@@ -13,12 +13,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ApiController extends AbstractController
 {
-    /** @var Client */
-    protected $guzzleClient;
+    /** @var GuzzleClientWrapper */
+    protected $guzzleClientWrapper;
 
-    public function __construct()
+    public function __construct(GuzzleClientWrapper $guzzleClientWrapper)
     {
-        $this->guzzleClient = new Client();
+        $this->guzzleClientWrapper = $guzzleClientWrapper;
     }
 
     /**
@@ -30,7 +30,7 @@ class ApiController extends AbstractController
     protected function apiRequest(string $method, string $url, array $options = []): JsonResponse
     {
         try {
-            $response = $this->guzzleClient->request($method, $url, $options);
+            $response = $this->guzzleClientWrapper->request($method, $url, $options);
         } catch (RequestException $e) {
             return new JsonResponse(['errors' => GuzzleRequestExceptionTransformer::toString($e)], $e->getCode());
         } catch (GuzzleException $e) {

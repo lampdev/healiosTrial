@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
-use GuzzleHttp\Client;
+use App\Wrappers\GuzzleClientWrapper;
 use GuzzleHttp\Exception\GuzzleException;
 use HealiosTrial\Services\GuzzleResponseTransformer;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,13 +13,14 @@ class UserRetriever
     /** @var string */
     private $authHost;
 
-    /** @var Client */
-    private $guzzleClient;
+    /** @var GuzzleClientWrapper */
+    private $guzzleClientWrapper;
 
-    public function __construct()
+    public function __construct(GuzzleClientWrapper $guzzleClientWrapper)
     {
+        $this->guzzleClientWrapper = $guzzleClientWrapper;
         $this->authHost = (string)getenv('AUTH_HOST');
-        $this->guzzleClient = new Client();
+
     }
 
     /**
@@ -29,7 +30,7 @@ class UserRetriever
     public function getUserByToken(Request $request): ?User
     {
         try {
-            $response = $this->guzzleClient->request(Request::METHOD_GET, $this->authHost . '/api/current', [
+            $response = $this->guzzleClientWrapper->request(Request::METHOD_GET, $this->authHost . '/api/current', [
                 'headers' => [
                     'Authorization' => (string)$request->headers->get('Authorization', ''),
                     'Accept' => 'application/json'

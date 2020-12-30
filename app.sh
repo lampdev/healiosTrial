@@ -22,6 +22,7 @@ if [ "$BUILD_OPTION" = "build" ]; then
     rm -rf ../crud/var
     rm -rf ../gateway/vendor
     rm -rf ../gateway/var
+    docker-compose build baseimg
     docker-compose build
 fi
 

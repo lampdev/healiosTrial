@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Wrappers\GuzzleClientWrapper;
 use HealiosTrial\Services\JsonRequestDataKeeper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +16,9 @@ class AuthController extends ApiController
     /** @var string */
     private $authHost;
 
-    public function __construct()
+    public function __construct(GuzzleClientWrapper $guzzleClientWrapper)
     {
-        parent::__construct();
+        parent::__construct($guzzleClientWrapper);
         $this->authHost = (string)getenv('AUTH_HOST');
     }
 

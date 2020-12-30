@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Wrappers\GuzzleClientWrapper;
 use HealiosTrial\Services\JsonRequestDataKeeper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,9 +16,9 @@ class UsersController extends ApiController implements TokenAuthenticatedControl
     /** @var string */
     private $crudHost;
 
-    public function __construct()
+    public function __construct(GuzzleClientWrapper $guzzleClientWrapper)
     {
-        parent::__construct();
+        parent::__construct($guzzleClientWrapper);
         $this->crudHost = (string)getenv('CRUD_HOST');
     }
 
