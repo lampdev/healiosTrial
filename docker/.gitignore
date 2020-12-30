@@ -1,2 +1,5 @@
 .env
 .idea
+images/base/config/auth.json
+images/base/config/keys.dev.pub
+images/base/config/keys.tags.pub
