@@ -69,6 +69,17 @@ class AuthController extends AbstractController
         $token = $this->tokenManager->createFromPayload($user, $response);
         $this->authHandler->handleAuthenticationSuccess($user, $token);
 
+        try {
+            $this->guzzleClient->post($this->crudHost . '/api/tokens/store', [
+                'json' => [
+                    'user_id' => (int)$response['id'],
+                    'token' => $token
+                ]
+            ]);
+        } catch (GuzzleException $e) {
+            // do nothing for now
+        }
+
         return new JsonResponse(['token' => $token]);
     }
 
