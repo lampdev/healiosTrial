@@ -48,6 +48,7 @@ class User implements EntityInterface, UserInterface
 
     /**
      * @ORM\OneToMany(targetEntity=AccessToken::class, mappedBy="user", orphanRemoval=true)
+     * @var Collection|AccessToken[]
      */
     private $accessTokens;
 
@@ -172,8 +173,6 @@ class User implements EntityInterface, UserInterface
         return $this;
     }
 
-    // eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDkzMzk2NTQsImV4cCI6MTYwOTM0MzI1NCwicm9sZXMiOltdLCJpZCI6MSwibmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBlbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJ1c2VybmFtZSI6ImFkbWluQGVtYWlsLmNvbSJ9.qEE4aEIZENNPIv14R5X_iq-VAeOvMwqRGV1liLdCujdLXjNYNJi0WL1mK9Xzv3G1Sz8BS5rL75u162mYIo-vmbHgQzNYIUJKce3Xi0EYSvBxgujk2tpyQAe7ZqsqOLJ7k_p_lkdYltVEzH2l2TUCJPw_jH-2QQZ159Fjib6JLyMLN3UEm---PGKO9Im_8Kf2nMKzNi4Sl1CM7IvJmHCdovciGHmEtprD5KuYKhjRCVpmZk1YyqvsFwFYttWSPEHObP5v4vIMHQHj7K9V-tOHIXRwoms2V5xWA3OSJHdBaQdTrKZ6wTr0FmiLnpDu-Tq9JOc_Tv64YNB1vEyED_IIh5k7-hY4f4GgIJ9rq1reBSKyI6Rg5eL8mN2a6fBxV7N9jjq5GfR8Dum0O4O-wFoIQxLGQbcDH-W67Je90DD2FfWMTBuS8u2vrIItSqBv4zCROcAfXi0FCK50yh8Qo2hvrcTlJCARZg3nkdBWHbjXZwBp_GfLmzvMl5sRk7TtXtbVvPF8FtgEdcxEm-3skZnu_5u3O85oGqsdYL5-TZuHK7ty801ZoMITdvNFTKYjttdC7zx6n_t3sFV0KCMGn810OkrsSi5v7hfRfyFJSvAnrVB3NJWCouX8Hz845nsuc5MKVMaPrFL6zqqcaybvjGGjLVb6NYqkZ_4sasJsVaQ1x38
-
     /**
      * @return Collection|AccessToken[]
      */
@@ -182,6 +181,10 @@ class User implements EntityInterface, UserInterface
         return $this->accessTokens;
     }
 
+    /**
+     * @param AccessToken $accessToken
+     * @return $this
+     */
     public function addAccessToken(AccessToken $accessToken): self
     {
         if (!$this->accessTokens->contains($accessToken)) {
@@ -192,10 +195,13 @@ class User implements EntityInterface, UserInterface
         return $this;
     }
 
+    /**
+     * @param AccessToken $accessToken
+     * @return $this
+     */
     public function removeAccessToken(AccessToken $accessToken): self
     {
         if ($this->accessTokens->removeElement($accessToken)) {
-            // set the owning side to null (unless already changed)
             if ($accessToken->getUser() === $this) {
                 $accessToken->setUser(null);
             }
