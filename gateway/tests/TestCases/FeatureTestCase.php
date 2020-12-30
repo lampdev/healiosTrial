@@ -14,6 +14,8 @@ class FeatureTestCase extends WebTestCase
     protected const EXISTING_USER_NAME = 'user';
     protected const EXISTING_USER_EMAIL = 'user@email.com';
     protected const EXISTING_USER_PASSWORD = 'password';
+    protected const VALID_PASSWORD = 'SoMeSeCuRePaSsWoRd54535251!!!';
+    protected const VALID_NAME = 'SomeUsername';
 
     /** @var KernelBrowser|null */
     private static $client = null;
@@ -32,12 +34,42 @@ class FeatureTestCase extends WebTestCase
         return self::$client;
     }
 
-    protected function loginAsUser(): void
-    {
+    /**
+     * @param string $email
+     * @param string $password
+     */
+    protected function loginAsUser(
+        string $email = self::EXISTING_USER_EMAIL,
+        string $password = self::EXISTING_USER_PASSWORD
+    ): void {
         $this->post('/api/login', [
-            'email' => self::EXISTING_USER_EMAIL,
-            'password' => self::EXISTING_USER_PASSWORD,
+            'email' => $email,
+            'password' => $password
         ]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $email
+     * @param string $password
+     * @return string
+     */
+    protected function registerAsUser(
+        string $name = self::VALID_NAME,
+        string $email = '',
+        string $password = self::VALID_PASSWORD
+    ): string {
+        if ($email == '') {
+            $email = $this->getNonExistingValidEmail();
+        }
+
+        $this->post('/api/register', [
+            'name' => $name,
+            'email' => $email,
+            'password' => $password,
+        ]);
+
+        return $email;
     }
 
     /**
@@ -83,7 +115,8 @@ class FeatureTestCase extends WebTestCase
         array $server = [],
         string $content = null,
         bool $changeHistory = true
-    ): ?Crawler {
+    ): ?Crawler
+    {
         return self::getClient()->request('POST', $uri, $parameters, $files, $server, $content, $changeHistory);
     }
 
@@ -103,7 +136,8 @@ class FeatureTestCase extends WebTestCase
         array $server = [],
         string $content = null,
         bool $changeHistory = true
-    ): ?Crawler {
+    ): ?Crawler
+    {
         return self::getClient()->request('GET', $uri, $parameters, $files, $server, $content, $changeHistory);
     }
 
@@ -123,7 +157,8 @@ class FeatureTestCase extends WebTestCase
         array $server = [],
         string $content = null,
         bool $changeHistory = true
-    ): ?Crawler {
+    ): ?Crawler
+    {
         return self::getClient()->request('PUT', $uri, $parameters, $files, $server, $content, $changeHistory);
     }
 
@@ -143,7 +178,16 @@ class FeatureTestCase extends WebTestCase
         array $server = [],
         string $content = null,
         bool $changeHistory = true
-    ): ?Crawler {
+    ): ?Crawler
+    {
         return self::getClient()->request('DELETE', $uri, $parameters, $files, $server, $content, $changeHistory);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getNonExistingValidEmail(): string
+    {
+        return 'someEmail' . rand(0, 100) . microtime(true) . '@email.com';
     }
 }

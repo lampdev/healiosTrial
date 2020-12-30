@@ -7,17 +7,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AuthApiTests extends FeatureTestCase
 {
-    private const VALID_PASSWORD = 'SoMeSeCuRePaSsWoRd54535251!!!';
-    private const VALID_NAME = 'SomeUsername';
-
     public function testRegister(): void
     {
-        $email = $this->getNonExistingValidEmail();
-        $this->post('/api/register', [
-            'name' => self::VALID_NAME,
-            'email' => $email,
-            'password' => self::VALID_PASSWORD,
-        ]);
+        $email = $this->registerAsUser();
         $this->assertResponseOk();
         $response = $this->getArrayResponse();
         $this->assertArrayHasKey('id', $response);
@@ -136,11 +128,5 @@ class AuthApiTests extends FeatureTestCase
         $this->assertResponseStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    /**
-     * @return string
-     */
-    private function getNonExistingValidEmail(): string
-    {
-        return 'someEmail' . rand(0, 100) . microtime(true) . '@email.com';
-    }
+
 }
