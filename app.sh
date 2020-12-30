@@ -11,6 +11,10 @@ cp ./crud/.env.example ./crud/.env
 cp ./docker/.env.example ./docker/.env
 cp ./gateway/.env.example ./gateway/.env
 
+cp ./docker/images/base/auth.json.example ./docker/images/base/auth.json
+cp ./docker/images/base/keys.dev.pub.example ./docker/images/base/keys.dev.pub
+cp ./docker/images/base/keys.tags.pub.example ./docker/images/base/keys.tags.pub
+
 cd ./docker
 
 docker-compose down -v --remove-orphans
