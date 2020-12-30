@@ -79,6 +79,7 @@ class UsersApiTests extends FeatureTestCase
         ]);
         $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
     public function testUpdateWithWeakPassword()
     {
         $newUserData = $this->registerAndLoginAsNewUser();
@@ -95,6 +96,7 @@ class UsersApiTests extends FeatureTestCase
         ]);
         $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
+
     public function testUpdateWithShortName()
     {
         $newUserData = $this->registerAndLoginAsNewUser();
@@ -201,6 +203,4 @@ class UsersApiTests extends FeatureTestCase
         ]);
         $this->assertResponseStatus(Response::HTTP_FORBIDDEN);
     }
-
-
 }
