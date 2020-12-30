@@ -6,11 +6,10 @@ From the project run execute:
 - `chmod +x ./app.sh`
 - `./app.sh`
 
-This script will build everything by using `.example` env files and configs.
+This script will build everything by using `.example` env files.
 
 Another option is:
 - create env files in `docker`, `crud`, `auth` and `gateway` folders using examples
-- create composer auth configs in `docker/images/base/config` folder using examples
 - `cd ./docker`
 - `docker-compose build baseimg`
 - `docker-compose build`
