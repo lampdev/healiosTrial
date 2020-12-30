@@ -104,3 +104,7 @@ docker-compose exec gateway php bin/phpunit ./tests/Feature/AuthApiTests.php
 docker-compose exec gateway php bin/phpunit ./tests/Feature/UsersApiTests.php
 docker-compose exec gateway php bin/phpunit ./tests/Feature/AdminsApiTests.php
 ```
+
+## Additional
+- DB access: http://127.0.0.1:8080/
+- default credentials: `homestead` / `secret`
