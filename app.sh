@@ -32,6 +32,10 @@ cd ../crud; composer install
 cd ../gateway; composer install
 cd ../docker;
 
+docker-compose exec crud ./vendor/bin/phpunit ./vendor/stas-lampdev/healios-trial-shared-services/tests
+docker-compose exec crud ./vendor/bin/phpunit ./tests
+docker-compose exec gateway php bin/phpunit ./tests/Unit/UserRetrieverTest.php
+
 docker-compose exec gateway php bin/phpunit ./tests/Feature/AuthApiTests.php
 docker-compose exec gateway php bin/phpunit ./tests/Feature/UsersApiTests.php
 docker-compose exec gateway php bin/phpunit ./tests/Feature/AdminsApiTests.php

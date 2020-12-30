@@ -33,7 +33,91 @@ class AdminsApiTests extends FeatureTestCase
             'isAdmin' => false
         ];
         $this->assertEquals($expectedResponse, $response);
+    }
 
+    public function testAdminStoreIfWrongRole()
+    {
+        $this->loginAsAdmin();
+        $response = $this->getArrayResponse();
+        $token = $response['token'];
+        $data = [
+            'name' => self::VALID_NAME,
+            'email' => $this->getNonExistingValidEmail(),
+            'password' => self::VALID_PASSWORD,
+            'role_id' => '-1'
+        ];
+        $headers = [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+            'CONTENT_TYPE' => 'application/json'
+        ];
+        $this->post('/api/users/store', $data, [], $headers);
+        $this->assertResponseOk();
+        $response = $this->getArrayResponse();
+        $this->assertGreaterThan(0, $response['id']);
+        unset($response['id']);
+        $expectedResponse = [
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'isAdmin' => false
+        ];
+        $this->assertEquals($expectedResponse, $response);
+    }
+
+    public function testAdminStoreIfInvalidName()
+    {
+        $this->loginAsAdmin();
+        $response = $this->getArrayResponse();
+        $token = $response['token'];
+        $data = [
+            'name' => 'A',
+            'email' => $this->getNonExistingValidEmail(),
+            'password' => self::VALID_PASSWORD,
+            'role_id' => '2'
+        ];
+        $headers = [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+            'CONTENT_TYPE' => 'application/json'
+        ];
+        $this->post('/api/users/store', $data, [], $headers);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testAdminStoreIfExistingEmail()
+    {
+        $this->loginAsAdmin();
+        $response = $this->getArrayResponse();
+        $token = $response['token'];
+        $data = [
+            'name' => self::VALID_NAME,
+            'email' => self::EXISTING_USER_EMAIL,
+            'password' => self::VALID_PASSWORD,
+            'role_id' => '2'
+        ];
+        $headers = [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+            'CONTENT_TYPE' => 'application/json'
+        ];
+        $this->post('/api/users/store', $data, [], $headers);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    public function testAdminStoreIfWeakPassword()
+    {
+        $this->loginAsAdmin();
+        $response = $this->getArrayResponse();
+        $token = $response['token'];
+        $data = [
+            'name' => self::VALID_NAME,
+            'email' => $this->getNonExistingValidEmail(),
+            'password' => 'password',
+            'role_id' => '2'
+        ];
+        $headers = [
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $token,
+            'CONTENT_TYPE' => 'application/json'
+        ];
+        $this->post('/api/users/store', $data, [], $headers);
+        $this->assertResponseStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function testAdminShow()
