@@ -11,9 +11,9 @@ cp ./crud/.env.example ./crud/.env
 cp ./docker/.env.example ./docker/.env
 cp ./gateway/.env.example ./gateway/.env
 
-cp ./docker/images/base/auth.json.example ./docker/images/base/auth.json
-cp ./docker/images/base/keys.dev.pub.example ./docker/images/base/keys.dev.pub
-cp ./docker/images/base/keys.tags.pub.example ./docker/images/base/keys.tags.pub
+cp ./docker/images/base/config/auth.json.example ./docker/images/base/config/auth.json
+cp ./docker/images/base/config/keys.dev.pub.example ./docker/images/base/config/keys.dev.pub
+cp ./docker/images/base/config/keys.tags.pub.example ./docker/images/base/config/keys.tags.pub
 
 cd ./docker
 
@@ -40,3 +40,4 @@ cd ../docker;
 
 docker-compose exec gateway php bin/phpunit ./tests/Feature/AuthApiTests.php
 docker-compose exec gateway php bin/phpunit ./tests/Feature/UsersApiTests.php
+docker-compose exec gateway php bin/phpunit ./tests/Feature/AdminsApiTests.php
