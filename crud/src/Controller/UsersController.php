@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\RefreshTokenRepository;
 use App\Repository\RoleRepository;
 use App\Repository\UserRepository;
 use App\Requests\UserRequest;
@@ -35,9 +34,6 @@ class UsersController extends AbstractController
     /** @var RoleRepository */
     private $roleRepository;
 
-    /** @var RefreshTokenRepository */
-    private $refreshTokenRepository;
-
     /** @var RolesManager */
     private $rolesManager;
 
@@ -50,14 +46,12 @@ class UsersController extends AbstractController
     public function __construct(
         UserRepository $userRepository,
         RoleRepository $roleRepository,
-        RefreshTokenRepository $refreshTokenRepository,
         RolesManager $rolesManager,
         UserRequest $userRequest,
         UserResponse $userResponse
     ) {
         $this->userRepository = $userRepository;
         $this->roleRepository = $roleRepository;
-        $this->refreshTokenRepository = $refreshTokenRepository;
         $this->rolesManager = $rolesManager;
         $this->userRequest = $userRequest;
         $this->userResponse = $userResponse;
@@ -165,10 +159,7 @@ class UsersController extends AbstractController
             return new JsonResponse(['errors' => 'This email is already in use'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $oldEmail = $user->getEmail();
         $this->persistUser($user, $encoder);
-        $newEmail = $user->getEmail();
-        $this->refreshTokenRepository->updateTokenEmail($oldEmail, $newEmail);
 
         return new JsonResponse($this->userResponse);
     }
@@ -192,8 +183,6 @@ class UsersController extends AbstractController
         if (!$removed) {
             return new JsonResponse(['errors' => 'Entity was not removed'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $this->refreshTokenRepository->removeAllByEmail($user->getEmail());
 
         return new JsonResponse(['success' => true]);
     }
