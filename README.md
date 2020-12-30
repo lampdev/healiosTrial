@@ -2,7 +2,8 @@
 
 ## How to run the app
 
-From the project run execute:
+- `git clone https://github.com/lampdev/healiosTrial.git`
+- `cd healiosTrial`
 - `chmod +x ./app.sh`
 - `./app.sh`
 
