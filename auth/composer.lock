@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "30ac3c997177f874fd78966640e17adf",
+    "content-hash": "e4519d8121f8f7b99640a66e1fa5cee9",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -979,13 +979,14 @@
                     "HealiosTrial\\Tests\\": "tests/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
             "description": "Shared services for Healios trial task",
             "support": {
-                "source": "https://github.com/StasLampdev/healiosTrialSharedServices/tree/v1.0.5",
-                "issues": "https://github.com/StasLampdev/healiosTrialSharedServices/issues"
+                "issues": "https://github.com/StasLampdev/healiosTrialSharedServices/issues",
+                "source": "https://github.com/StasLampdev/healiosTrialSharedServices/tree/v1.0.5"
             },
             "time": "2020-12-30T12:57:26+00:00"
         },

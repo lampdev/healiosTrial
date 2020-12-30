@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# chmod +x ./app.sh
-
 set -e
 
 BUILD_OPTION=$1
@@ -10,10 +8,6 @@ cp ./auth/.env.example ./auth/.env
 cp ./crud/.env.example ./crud/.env
 cp ./docker/.env.example ./docker/.env
 cp ./gateway/.env.example ./gateway/.env
-
-cp ./docker/images/base/config/auth.json.example ./docker/images/base/config/auth.json
-cp ./docker/images/base/config/keys.dev.pub.example ./docker/images/base/config/keys.dev.pub
-cp ./docker/images/base/config/keys.tags.pub.example ./docker/images/base/config/keys.tags.pub
 
 cd ./docker
 

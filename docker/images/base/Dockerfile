@@ -37,5 +37,3 @@ RUN set -xe \
 RUN set -xe \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer && chmod +x /usr/local/bin/composer
-
-COPY ./config /root/.config/composer

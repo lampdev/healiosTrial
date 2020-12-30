@@ -210,7 +210,7 @@
         "version": "2.0.1"
     },
     "stas-lampdev/healios-trial-shared-services": {
-        "version": "v1.0.0"
+        "version": "v1.0.5"
     },
     "symfony/cache": {
         "version": "v4.4.18"
