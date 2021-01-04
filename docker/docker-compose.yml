@@ -42,8 +42,6 @@ services:
       dockerfile: Dockerfile
       args:
         SYSTEM_TZ: "${SYSTEM_TZ:-Europe/Kiev}"
-    environment:
-      COMPOSER_AUTH: "'${COMPOSER_AUTH:-auth}'"
     image: baseimg
 
   crud:

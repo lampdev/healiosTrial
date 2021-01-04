@@ -1,7 +1,6 @@
 FROM ubuntu
 
 ARG SYSTEM_TZ
-ARG GITHUB_TOKEN
 
 RUN ln -snf /usr/share/zoneinfo/$SYSTEM_TZ /etc/localtime && echo $SYSTEM_TZ > /etc/timezone
 
